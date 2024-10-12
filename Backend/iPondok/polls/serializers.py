@@ -6,4 +6,4 @@ from .models import Pondok
 class PondokSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pondok
-        fields = ['id', 'nama', 'harga', 'alamat', 'fasilitas', 'aturan']
+        fields = ['id', 'nama','nomor', 'harga', 'alamat', 'fasilitas', 'aturan', 'link_alamat']
