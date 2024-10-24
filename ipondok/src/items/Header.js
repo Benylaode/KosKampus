@@ -15,19 +15,25 @@ export default function Header() {
       <nav>
         <ul className="flex space-x-6">
           <li>
-            <Link to="/" className="text-gray-800 hover:text-blue-500">
+            <div id="home">
+            <Link to="/" className="text-gray-800 hover:text-red-500">
               Home
             </Link>
+            </div>
           </li>
           <li>
-            {/* <Link to="/kosku" className="text-gray-800 hover:text-blue-500"> */}
-            <span className="text-red-500">Kosku</span>
-            {/* </Link> */}
+            <div id="kosku"> 
+            <Link to="/kosku" className="text-red-500 hover:text-black">
+            Kosku
+            </Link>
+            </div>
           </li>
           <li>
-            {/* <Link to="/login" className="text-gray-800 hover:text-blue-500"> */}
+            <div id="dasbor">
+            <Link to="/login" className="text-gray-800 hover:text-red-500">
               Dasbor Login
-            {/* </Link> */}
+            </Link>
+            </div>
           </li>
         </ul>
       </nav>
