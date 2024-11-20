@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { fetchData } from "../api";
 import Header from "../items/Header";
 import Footer from "../items/Footer";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import logo from "../assets/image.png";
+import icon from "../assets/logo.png"; 
 
 export default function Home() {
   const [pondoks, setPondoks] = useState([]);
@@ -18,6 +22,12 @@ export default function Home() {
     if (isNaN(angka)) return "";
     return `Rp${angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   }
+  const customMarkerIcon = new L.Icon({
+    iconUrl: icon,
+    iconSize: [40, 40], // Ukuran ikon
+    iconAnchor: [20, 40], // Titik jangkar (biasanya bagian bawah ikon)
+    popupAnchor: [0, -40], // Titik jangkar popup relatif terhadap ikon
+  });
 
   useEffect(() => {
     const getPondoks = async () => {
@@ -84,14 +94,32 @@ export default function Home() {
           <Header />
         </div>
         
-        <div className="w-full rounded-lg overflow-hidden m-4 p-2 bg-grey-900 border border-grey-900 shadow-lg">
+      {/* Peta Interaktif */}
+      <div className="w-full rounded-lg overflow-hidden m-4 p-2 bg-grey-900 border border-grey-900 shadow-lg">
           <div className="relative h-[500px]">
-            <iframe 
-              src="https://www.google.com/maps/d/u/0/embed?mid=1ISw5NyWHUbmtkvkhY62bk9nsllOJ5cA&ehbc=2E312F" 
-              allowFullScreen 
-              title="MAPS KOSUNHAS"
-              className="absolute top-0 left-0 w-full h-full rounded-lg">
-            </iframe>
+            <MapContainer
+              center={[-5.147665, 119.432731]} 
+              zoom={13}
+              style={{ height: "100%", width: "100%" }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+              />
+              {filteredPondoks.map((pondok) => (
+                <Marker
+                  key={pondok.id}
+                  position={[parseFloat(pondok.latitude), parseFloat(pondok.longitude)]}
+                  icon={customMarkerIcon}
+                >
+                  <Popup>
+                    <b>{pondok.nama}</b><br />
+                    {pondok.universitas}<br />
+                    {formatRupiah(pondok.harga_bulan)} / bulan
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
           </div>
         </div>
 
