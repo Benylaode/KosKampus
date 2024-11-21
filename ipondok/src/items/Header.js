@@ -9,8 +9,7 @@ export default function Header() {
       <div className="flex-shrink-0">
         <img src={logo} alt="Logo" className="max-w-full h-auto" /> {/* Ukuran logo disesuaikan */}
       </div>
-
-
+      
       {/* Navigation */}
       <nav>
         <ul className="flex space-x-6">

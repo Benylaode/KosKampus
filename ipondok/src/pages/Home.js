@@ -1,65 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { fetchData } from "../api";
-import Header from "../items/Header";
+import React, { useEffect, useState, useContext } from "react";
+import Maps from "../items/Maps";
 import Footer from "../items/Footer";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import logo from "../assets/image.png";
-import icon from "../assets/logo.png"; 
+import { PondokContext } from '../PondokContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
-  const [pondoks, setPondoks] = useState([]);
-  const [filteredPondoks, setFilteredPondoks] = useState([]);
+  const { pondoks, error } = useContext(PondokContext);
+  const [, setFilteredPondoks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUniversity, setSelectedUniversity] = useState("");
   const [selectedPrice, setSelectedPrice] = useState("");
   const [selectedType, setSelectedType] = useState("");
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   function formatRupiah(angkaStr) {
     const angka = parseFloat(angkaStr);
     if (isNaN(angka)) return "";
     return `Rp${angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   }
-  const customMarkerIcon = new L.Icon({
-    iconUrl: icon,
-    iconSize: [40, 40], // Ukuran ikon
-    iconAnchor: [20, 40], // Titik jangkar (biasanya bagian bawah ikon)
-    popupAnchor: [0, -40], // Titik jangkar popup relatif terhadap ikon
-  });
-
-  useEffect(() => {
-    const getPondoks = async () => {
-      try {
-        if (process.env.REACT_APP_DEBUG === 'true') {
-          console.log('Fetching pondok data from API...');
-        }
-
-        const responseData = await fetchData('pondok');
-        
-        if (process.env.REACT_APP_DEBUG === 'true') {
-          console.log('Data fetched successfully:', responseData);
-        }
-
-        setPondoks(responseData.data);
-        setFilteredPondoks(responseData.data); // Set initial filtered data
-      } catch (error) {
-        setError(error);
-        
-        if (process.env.REACT_APP_DEBUG === 'true') {
-          console.error('Error fetching pondok data:', error);
-        }
-      }
-    };
-
-    getPondoks();
-  }, []);
+;
 
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value.toLowerCase());
   };
+
+    // Navigasi ke halaman detail dan kirimkan state (data pondok)
+    
+
 
   // Filter data based on search and dropdown selections
   useEffect(() => {
@@ -90,39 +60,9 @@ export default function Home() {
   return (
     <>
       <div className="inset-0 bg-gray-100 -z-10">
-        <div>
-          <Header />
+      <div>
+          <Maps />
         </div>
-        
-      {/* Peta Interaktif */}
-      <div className="w-full rounded-lg overflow-hidden m-4 p-2 bg-grey-900 border border-grey-900 shadow-lg">
-          <div className="relative h-[500px]">
-            <MapContainer
-              center={[-5.147665, 119.432731]} 
-              zoom={13}
-              style={{ height: "100%", width: "100%" }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
-              />
-              {filteredPondoks.map((pondok) => (
-                <Marker
-                  key={pondok.id}
-                  position={[parseFloat(pondok.latitude), parseFloat(pondok.longitude)]}
-                  icon={customMarkerIcon}
-                >
-                  <Popup>
-                    <b>{pondok.nama}</b><br />
-                    {pondok.universitas}<br />
-                    {formatRupiah(pondok.harga_bulan)} / bulan
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-          </div>
-        </div>
-
         {/* Search and Filter */}
         <div className="flex justify-center my-4 space-x-4">
           <input
@@ -173,11 +113,15 @@ export default function Home() {
 
         <div className="flex flex-wrap justify-center">
           {error && <p>Error: {error.message}</p>}
-          {filteredPondoks.map((pondok) => (
+          {pondoks.map((pondok) => (
             <div
               key={pondok.id}
               className="w-auto rounded-lg overflow-hidden m-1 mb-5 bg-white flex flex-col"
+              style={{ cursor: 'pointer' }} // Menambahkan cursor pointer
+              onClick={()=>navigate(`/pondok/${pondok.id}`, { state: { pondok } })}
+
             >
+              
               <div className="flex flex-col items-start rounded border border-grey group hover:bg-red-900">
                 <div className="pl-8 pr-8 pb-3">
                   <img 
