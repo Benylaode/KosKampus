@@ -1,75 +1,109 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { OrderPondok } from '../api';  // Pastikan import OrderPondok
+import DatePicker from "react-datepicker"; // Import react-datepicker
+import "react-datepicker/dist/react-datepicker.css";  // Import style react-datepicker
 
 const InvoiceForm = () => {
-    const location = useLocation();  
-    const { pondok } = location.state || {};  
-    // const error = pondok ? null : "Pondok tidak ditemukan."; 
+  const location = useLocation();
+  const { pondok } = location.state || {};
 
-    const [invoiceData, setInvoiceData] = useState({
+  const [invoiceData, setInvoiceData] = useState({
     invoiceDate: new Date().toISOString().split("T")[0],
-    dueDate: "",
+    dueDate: new Date(), // Menggunakan objek Date untuk dueDate
     sellerName: "",
     sellerAddress: "",
     buyerName: "",
     buyerAddress: "",
-    buyerEmail:"",
-    Pondok: 
-        [{
-          id: pondok.id,
-          nama: pondok.nama,
-          universitas: pondok.universitas,
-        }],
+    buyerEmail: "",
+    pondok_id: pondok ? pondok.id : "",
     notes: "",
+    tangga: new Date().toISOString(),
+    isBulanan: true,
+    totalBiaya: 0,
+    biayaAdmin: 0,
   });
+
+  useEffect(() => {
+    if (pondok) {
+      // Mengambil harga_bulan dan harga_tahun dari pondok
+      const harga = invoiceData.isBulanan ? pondok.harga_bulan : pondok.harga_tahun;
+
+      // Menghitung total biaya dan biaya admin
+      const totalBiaya = parseFloat(harga);
+      const biayaAdmin = totalBiaya * 0.1; // 10% dari total biaya
+
+      setInvoiceData((prevData) => ({
+        ...prevData,
+        totalBiaya,
+        biayaAdmin,
+      }));
+    }
+  }, [pondok, invoiceData.isBulanan]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setInvoiceData({ ...invoiceData, [name]: value });
   };
 
-  const handlePondokChange = (index, field, value) => {
-    const updatedPondoks = [...invoiceData.Pondok];
-    updatedPondoks[index][field] = value;
-    setInvoiceData({ ...invoiceData, Pondok: updatedPondoks });
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target;
+    setInvoiceData({ ...invoiceData, [name]: value === "bulanan" });
   };
 
-  const addPondok = () => {
-    setInvoiceData({
-      ...invoiceData,
-      Pondok: [...invoiceData.Pondoks, { description: "", quantity: 0, price: 0 }],
-    });
+  const handleDateChange = (date) => {
+    setInvoiceData({ ...invoiceData, dueDate: date });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(invoiceData); // Simpan atau kirim data invoice ke backend
+
+    const dataToSend = {
+      pondok_id: invoiceData.pondok_id,
+      email_buyer: invoiceData.buyerEmail,
+      order_date: invoiceData.invoiceDate,
+      nama_buyer: invoiceData.buyerName,
+      status: "pending",
+      isBulanan: invoiceData.isBulanan,
+      tanggal_mulai: invoiceData.dueDate.toISOString().split("T")[0], // Mengonversi date ke string
+      tangga: invoiceData.tangga,
+      biaya_admin: invoiceData.biayaAdmin,
+      total_biaya: invoiceData.totalBiaya,
+    };
+
+    try {
+      // Panggil API untuk membuat order
+      const result = await OrderPondok(dataToSend);  // Kirim data ke API
+      console.log(result);
+      alert("Order successfully created!");
+    } catch (error) {
+      console.error("Error during order creation:", error);
+      alert("An error occurred, please try again.");
+    }
   };
 
   return (
     <div className="font-sans p-8 bg-red-100 min-h-screen">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-8">
-        <h2 className="text-2xl font-bold text-red-600 mb-6">
-          Form Pemesanan
-        </h2>
+        <h2 className="text-2xl font-bold text-red-600 mb-6">Form Pemesanan</h2>
         <form onSubmit={handleSubmit}>
           {/* Informasi Invoice */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block font-semibold text-gray-700">Invoice Date</label>
-              <input
-                type="date"
-                name="invoiceDate"
-                value={invoiceData.invoiceDate}
-                onChange={handleInputChange}
+              <label className="block font-semibold text-gray-700">Due Date</label>
+              <DatePicker
+                selected={invoiceData.dueDate}
+                onChange={handleDateChange}
                 className="border w-full p-2 rounded focus:ring-2 focus:ring-red-400"
+                dateFormat="dd-MM-yyyy"  // Format tampilan tanggal
+                minDate={new Date()}  // Membatasi tanggal untuk tidak memilih tanggal di masa lalu
               />
             </div>
           </div>
 
-          {/* Informasi Penjual dan Pembeli */}
+          {/* Informasi Pembeli */}
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">Beller Email</label>
+            <label className="block font-semibold text-gray-700">Buyer Email</label>
             <input
               type="text"
               name="buyerEmail"
@@ -79,7 +113,7 @@ const InvoiceForm = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">Buyer Name</label>
+            <label className="block font-semibold text-gray-700">Nama Pembeli</label>
             <input
               type="text"
               name="buyerName"
@@ -88,56 +122,20 @@ const InvoiceForm = () => {
               className="border w-full p-2 rounded focus:ring-2 focus:ring-red-400"
             />
           </div>
+
+
+          {/* Pilihan Bulanan atau Tahunan */}
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">Buyer Address</label>
-            <textarea
-              name="buyerAddress"
-              value={invoiceData.buyerAddress}
-              onChange={handleInputChange}
+            <label className="block font-semibold text-gray-700">Pilih Durasi</label>
+            <select
+              name="isBulanan"
+              value={invoiceData.isBulanan ? "bulanan" : "tahunan"}
+              onChange={handleSelectChange}
               className="border w-full p-2 rounded focus:ring-2 focus:ring-red-400"
-            />
-          </div>
-          {/* Daftar Barang */}
-          <div className="mb-4">
-            <h3 className="font-semibold text-gray-700">Pondok</h3>
-            {invoiceData.Pondok.map((pondok, index) => (
-              <div key={index} className="grid grid-cols-3 gap-4 mb-2">
-                <input 
-                  type="number"
-                  placeholder="id"
-                  value={pondok.id}
-                  onChange={(e) =>
-                    handlePondokChange(index, "id", parseInt(e.target.value))
-                  }
-                  className="border p-2 hidden rounded focus:ring-2 focus:ring-red-400"
-                />
-                <input
-                  type="text"
-                  placeholder="nama"
-                  value={pondok.nama}
-                  onChange={(e) =>
-                    handlePondokChange(index, "nama", e.target.value)
-                  }
-                  className="border p-2 rounded focus:ring-2 focus:ring-red-400"
-                />
-                <input
-                  type="text"
-                  placeholder="universitas"
-                  value={pondok.universitas}
-                  onChange={(e) =>
-                    handlePondokChange(index, "universitas", e.target.value)
-                  }
-                  className="border p-2 rounded focus:ring-2 focus:ring-red-400"
-                />
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={addPondok}
-              className="bg-red-600 text-white px-4 py-2 rounded mt-2"
             >
-              Add Pondok
-            </button>
+              <option value="bulanan">Bulanan</option>
+              <option value="tahunan">Tahunan</option>
+            </select>
           </div>
 
           {/* Catatan */}
@@ -151,6 +149,26 @@ const InvoiceForm = () => {
             />
           </div>
 
+          {/* Menampilkan total biaya dan biaya admin */}
+          <div className="mb-4 border-t pt-4">
+          <div className="flex justify-between text-lg font-semibold">
+              <p>Nama Pondok</p>
+              <p>{pondok.nama}</p>
+            </div>
+            <div className="flex justify-between text-lg font-semibold">
+              <p>Total Biaya</p>
+              <p>{invoiceData.totalBiaya.toFixed(2)}</p>
+            </div>
+            <div className="flex justify-between text-lg font-semibold">
+              <p>Biaya Admin</p>
+              <p>{invoiceData.biayaAdmin.toFixed(2)}</p>
+            </div>
+            <div className="flex justify-between text-xl font-bold border-t pt-4">
+              <p>Total Pembayaran</p>
+              <p>{(invoiceData.totalBiaya + invoiceData.biayaAdmin).toFixed(2)}</p>
+            </div>
+          </div>
+
           {/* Tombol Submit */}
           <button
             type="submit"
@@ -160,11 +178,11 @@ const InvoiceForm = () => {
           </button>
         </form>
         <button
-            onClick={() => window.history.back()}
-            className="bg-red-600 text-white px-6 py-2 mt-5 rounded shadow hover:bg-red-700"
-          >
-            Back
-          </button>
+          onClick={() => window.history.back()}
+          className="bg-red-600 text-white px-6 py-2 mt-5 rounded shadow hover:bg-red-700"
+        >
+          Back
+        </button>
       </div>
     </div>
   );

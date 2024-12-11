@@ -5,18 +5,35 @@ import L from "leaflet";
 import icon from "../assets/logo.png";
 
 export default function Maps({ pondoks, navigate, error }) {
-  const [mapCenter, setMapCenter] = useState({ lat: -5.147665, lng: 119.432732 });
+  const [mapCenter, setMapCenter] = useState({ lat: -5.147665, lng: 119.432732 }); // Nilai default
 
   useEffect(() => {
     if (Object.keys(pondoks).length > 0) {
       const firstPondok = Object.values(pondoks)[0];
-      setMapCenter({
-        lat: parseFloat(firstPondok.latitude),
-        lng: parseFloat(firstPondok.longitude),
-      });
-      console.log(Object.keys(pondoks).length); 
+  
+      // Parsing latitude dan longitude
+      const latitude = parseFloat(firstPondok.latitude);
+      const longitude = parseFloat(firstPondok.longitude);
+  
+      // Pengecekan apakah latitude dan longitude valid
+      if (!latitude || !longitude) {
+        // Jika tidak valid, kembali ke nilai default
+        setMapCenter({
+          lat: -5.147665, // nilai default untuk lat
+          lng: 119.432732, // nilai default untuk lng
+        });
+      } else {
+        // Jika valid, set nilai lat dan lng dari pondok pertama
+        setMapCenter({
+          lat: latitude,
+          lng: longitude,
+        });
+      }
+  
+      console.log(Object.keys(pondoks).length);
     }
-  }, [pondoks]);
+  }, [pondoks]); // Memantau perubahan pada pondoks
+  
   
   const customMarkerIcon = new L.Icon({
     iconUrl: icon,
@@ -34,11 +51,11 @@ export default function Maps({ pondoks, navigate, error }) {
 
   return (
     <div className="w-full  rounded-lg overflow-hidden m-0 p-0 bg-grey-900 border border-grey-900 shadow-lg">
-    <div className="relative h-[580px]">
+    <div className="relative" style={{ height: 'min(calc(70vh + 10vw), 85svh)' }}>
       <MapContainer
         key={`${mapCenter.lat}-${mapCenter.lng}`}
         center={[mapCenter.lat, mapCenter.lng]}
-        zoom={14}
+        zoom={14} 
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
@@ -47,6 +64,7 @@ export default function Maps({ pondoks, navigate, error }) {
         />
         {error && <p>Error: {error.message}</p>}
         {pondoks.map((pondok) => (
+        (parseFloat(pondok.latitude) && parseFloat(pondok.longitude)) ? (
           <Marker
             key={pondok.id}
             position={[parseFloat(pondok.latitude), parseFloat(pondok.longitude)]}
@@ -70,7 +88,9 @@ export default function Maps({ pondoks, navigate, error }) {
               </button>
             </Popup>
           </Marker>
-        ))}
+        ) : null
+      ))}
+
       </MapContainer>
     </div>
   </div>

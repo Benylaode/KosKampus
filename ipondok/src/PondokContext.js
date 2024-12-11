@@ -1,31 +1,87 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { fetchData } from './api';
+import React, { useState, useEffect, createContext, useCallback } from 'react';
+import { fetchPaginatedData, searchPondok as searchPondokAPI } from './api';
 
-// Membuat konteks
 export const PondokContext = createContext();
 
-// Membuat Provider untuk memberikan data ke komponen lainnya
 export const PondokProvider = ({ children }) => {
-    const [pondoks, setPondoks] = useState([]);
-    const [error, setError] = useState(null);
+  const [pondoks, setPondoks] = useState([]); // Data pondok untuk halaman saat ini
+  const [searchResults, setSearchResults] = useState([]); // Hasil pencarian
+  const [loading, setLoading] = useState(false); // Status loading
+  const [error, setError] = useState(null); // Status error
+  const [currentPage, setCurrentPage] = useState(1); // Halaman saat ini
+  const [totalPages, setTotalPages] = useState(1); // Total halaman dari paginasi
+  const [isSearching, setIsSearching] = useState(false); 
+  const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        const getPondoks = async () => {
-            try {
-                const responseData = await fetchData('pondok');
-                setPondoks(responseData.data);
-            } catch (err) {
-                setError(err);
-                console.error("Error fetching pondoks:", err);
-            }
-        };
+  // Fungsi untuk mengambil data paginasi
+  const getPondoks = useCallback(async (page = 1) => {
+    setLoading(true);
+    try {
+      const responseData = await fetchPaginatedData(`/pondok/?page=${page}`);
 
-        getPondoks();
-    }, []);
+      // Ekstrak data dan informasi paginasi
+      console.log(responseData);
+      const { results, total_pages } = responseData;
 
-    return (
-        <PondokContext.Provider value={{ pondoks, error }}>
-            {children}
-        </PondokContext.Provider>
-    );
+      setPondoks(results.data); // Set data pondok
+      setTotalPages(total_pages); // Total halaman // URL halaman sebelumnya
+    } catch (err) {
+      setError(err.message);
+      console.error("Error fetching pondoks:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isSearching) {
+      // Jika sedang dalam mode pencarian
+      searchPondok(searchQuery);
+     
+    } else {
+      // Jika sedang dalam mode data utama
+      getPondoks(currentPage);
+    }
+  }, [currentPage, isSearching, searchQuery, getPondoks]);
+
+  // Handle search and update the results
+  const searchPondok = async (query, currentPage) => {
+    setLoading(true);
+    setIsSearching(true); // Aktifkan mode pencarian
+    setSearchQuery(query);
+    try {
+      const responseData = await searchPondokAPI(query, currentPage);
+  
+      // Ekstrak data dan informasi paginasi dari hasil pencarian
+      const { results, total_pages } = responseData;
+  
+      setSearchResults(results.data); // Set hasil pencarian
+      setTotalPages(total_pages); // Set total halaman // Set URL untuk halaman sebelumnya
+    } catch (err) {
+      setError(err.message);
+      console.error("Error searching pondok:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  return (
+    <PondokContext.Provider
+    value={{
+      pondoks,
+      isSearching,
+      searchResults,
+      loading,
+      error,
+      currentPage,
+      totalPages,
+      setCurrentPage,
+      searchPondok, 
+      setIsSearching
+    }}
+  >
+    {children}
+  </PondokContext.Provider>
+);
 };
