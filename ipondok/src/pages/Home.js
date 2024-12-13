@@ -1,9 +1,11 @@
-import React, { useState, useContext, useEffect, useCallback, useMemo} from "react";
-import { listUniversitas,listHarga } from '../api';
+import React, { useState, useContext, useEffect, useCallback, useMemo } from "react";
+import { listUniversitas, listHarga } from '../api';
 import Maps from "../items/Maps";
 import Footer from "../items/Footer";
 import 'leaflet/dist/leaflet.css';
 import logo from "../assets/image.png";
+import notFound from "../assets/notFound.png";
+import koskampus from "../assets/KosKampus.png";
 import { PondokContext } from '../PondokContext';
 import { useNavigate } from 'react-router-dom';
 import hrg from "../assets/src/harga.png"; 
@@ -11,19 +13,16 @@ import tipe from "../assets/src/tipe.png";
 import univ from "../assets/src/universitas.png"; 
 import src_white from "../assets/src/src_putih.png"; 
 
-
-// Debounce utility function
-
 export default function Home() {
-  const { 
-    pondoks, 
+  const {
+    pondoks,
     isSearching,
-    searchResults, 
-    loading, 
-    error, 
-    currentPage, 
-    totalPages, 
-    setCurrentPage, 
+    searchResults,
+    loading,
+    error,
+    currentPage,
+    totalPages,
+    setCurrentPage,
     searchPondok
   } = useContext(PondokContext);
 
@@ -35,11 +34,12 @@ export default function Home() {
   const [paginationVisible, setPaginationVisible] = useState(true);
   const [universities, setUniversities] = useState([]);
   const [harga, setHarga] = useState([]);
+  const [showOverlay, setShowOverlay] = useState(true);
 
   const fetchUniversities = async () => {
     try {
       const data = await listUniversitas();
-      setUniversities(data); // Data langsung berupa array string
+      setUniversities(data);
     } catch (error) {
       console.error('Error fetching universities:', error.message);
     }
@@ -48,7 +48,7 @@ export default function Home() {
   const fetchHarga = async () => {
     try {
       const data = await listHarga();
-      setHarga(data); // Data langsung berupa array string
+      setHarga(data);
     } catch (error) {
       console.error('Error fetching universities:', error.message);
     }
@@ -58,99 +58,117 @@ export default function Home() {
     const params = new URLSearchParams();
 
     if (searchQuery) {
-        params.append('nama', searchQuery); // Tambahkan parameter 'nama'
+      params.append('nama', searchQuery);
     }
 
     if (selectedType) {
-        params.append('tipe', selectedType); // Tambahkan parameter 'tipe'
+      params.append('tipe', selectedType);
     }
 
     if (selectedUniversity) {
-        params.append('universitas', selectedUniversity); // Tambahkan parameter 'universitas'
+      params.append('universitas', selectedUniversity);
     }
 
     if (selectedPrice) {
-        if (selectedPrice > 5000000) {
-            params.append('harga_tahun', selectedPrice); // Jika harga lebih dari 5 juta, tambahkan ke 'harga_tahun'
-        } else {
-            params.append('harga_bulan', selectedPrice); // Jika tidak, tambahkan ke 'harga_bulan'
-        }
+      if (selectedPrice > 5000000) {
+        params.append('harga_tahun', selectedPrice);
+      } else {
+        params.append('harga_bulan', selectedPrice);
+      }
     }
 
-    return params.toString(); // Konversi URLSearchParams ke string query
-}, [searchQuery, selectedType, selectedUniversity, selectedPrice]); 
-
+    return params.toString();
+  }, [searchQuery, selectedType, selectedUniversity, selectedPrice]);
 
   const navigate = useNavigate();
 
-  // Format for Rupiah currency
   const formatRupiah = (angkaStr) => {
     const angka = parseFloat(angkaStr);
     if (isNaN(angka)) return "";
     return `Rp${angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   };
 
-const isInPriceRange = useCallback((price) => {
-  const priceNumber = parseFloat(price);
-  switch (selectedPrice) {
-    case "low":
-      return priceNumber <= 1000000;
-    case "medium":
-      return priceNumber > 1000000 && priceNumber <= 2000000;
-    case "high":
-      return priceNumber > 2000000;
-    default:
-      return true;
-  }
-}, [selectedPrice]);
+  const isInPriceRange = useCallback((price) => {
+    const priceNumber = parseFloat(price);
+    switch (selectedPrice) {
+      case "low":
+        return priceNumber <= 1000000;
+      case "medium":
+        return priceNumber > 1000000 && priceNumber <= 2000000;
+      case "high":
+        return priceNumber > 2000000;
+      default:
+        return true;
+    }
+  }, [selectedPrice]);
 
-  // Update filteredPondoks based on search query, filrefreshLoginters, and currentPage
   useEffect(() => {
-    fetchHarga()
-    fetchUniversities()
+    fetchHarga();
+    fetchUniversities();
     if (!isSearching || queryString === "") {
-      setFilteredPondoks(pondoks); // Show all pondoks when not searching
-      setPaginationVisible(true); // Show pagination
+      setFilteredPondoks(pondoks);
+      setPaginationVisible(true);
     } else {
-      // When searching, apply filters and show search results
       setFilteredPondoks(searchResults);
-      setPaginationVisible(false); 
-      console.log("jalan")
-      
-       // Hide pagination for search results
+      setPaginationVisible(false);
     }
   }, [pondoks, searchResults, queryString, selectedUniversity, selectedPrice, selectedType, isSearching, isInPriceRange]);
 
-  // Trigger search in context when debounced query changes
-
-  // Handle the search button click
   const handleSearchClick = () => {
-    searchPondok(queryString); 
-    // Trigger search
+    searchPondok(queryString);
   };
 
-  // Handle the back button click
-  const handleBackClick = () => { // Set search inactive
-    setSearchQuery(""); // Clear the search query
-    setSelectedUniversity(""); // Clear the selected filters
+  const handleBackClick = () => {
+    setSearchQuery("");
+    setSelectedUniversity("");
     setSelectedPrice("");
     setSelectedType("");
-    setFilteredPondoks(pondoks); // Reset to all pondoks
-    setPaginationVisible(true);  // Clear search query
+    setFilteredPondoks(pondoks);
+    setPaginationVisible(true);
   };
 
-  // Pagination controls
   const handlePageChange = (page) => {
     setCurrentPage(page);
+  };
+
+  const toggleOverlay = () => {
+    setShowOverlay(!showOverlay);
   };
 
   return (
     <>
       <div className="inset-0 bg-gray-100 -z-10">
-      <div className="w-full h-1/4 mx-auto">
-          <Maps pondoks={filteredPondoks} navigate={navigate} error={error} />
-        </div>
+        <div className="relative w-full h-1/4 mx-auto">
+          <div
+            className={`absolute top-0 left-0 w-full h-full transition-all duration-500 ${
+              showOverlay ? 'backdrop-blur-sm bg-gray-800 bg-opacity-50 z-10' : ''
+            }`}
+          >
+            {showOverlay && (
+              <div className="flex flex-col items-center justify-center h-full">
+                <img src={koskampus} alt="App Logo" className="mb-4 w-auto h-auto" />
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  onClick={toggleOverlay}
+                >
+                  Lihat Peta
+                </button>
+              </div>
+            )}
 
+          </div>
+
+
+          <div className={`w-full h-full ${showOverlay ? 'blur-sm' : 'blur-none'}`}>
+            <Maps pondoks={filteredPondoks} navigate={navigate} error={error} />
+            <button
+              className="absolute fixed top-4 right-4 bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-800"
+              onClick={toggleOverlay}
+            >
+              {showOverlay ? 'Lihat Peta' : 'Tutup Peta'}
+            </button>
+          </div>
+        </div>
         {/* Search and Filter */}
         <div className="w-full max-w-8xl mx-auto justify-center pb-4">
         <div className=" flex flex-wrap justify-center pt-2 items-center rounded-lg overflow-hidden bg-white shadow-lg ">
@@ -191,13 +209,12 @@ const isInPriceRange = useCallback((price) => {
               className="hidden sm:block w-full h-full sm:w-64 px-4 py-2 text-center bg-white"
             >
               <option value="">Harga</option>
-              {harga.map((harga, index) => (
+              {harga.sort((a, b) => a - b).map((harga, index) => (
                 <option key={index} value={harga}>
-                  {harga}
+                  {formatRupiah(harga)}
                 </option>
               ))}
             </select>
-
           </div>
           <div className="flex items-center w-full  mx-2   sm:w-auto  sm:mb-0 justify-center">
           <img src={tipe} alt="Logo" className="hidden sm:block  max-w-full h-auto" /> {/* Ukuran logo disesuaikan */}
@@ -228,13 +245,8 @@ const isInPriceRange = useCallback((price) => {
           </div>
         </div>
       </div>
-
-
-
-
         {/* Filtered Pondok List */}
         <div className="flex flex-wrap justify-center">
-          {error && <p>Error: {error.message}</p>}
           {loading && <p>Loading...</p>}
           {filteredPondoks.length > 0 ? (
             filteredPondoks.map((pondok) => (
@@ -251,7 +263,6 @@ const isInPriceRange = useCallback((price) => {
                     alt={pondok.nama}
                     className="object-cover h-46 w-72 mt-4 mb-4 drop-shadow-xl"
                   />
-
                     <div className="text-base mt-0 mb-1 text-black font-bold drop-shadow-xl group-hover:text-white transition-colors">
                       {pondok.nama.split(" ").slice(0, 3).join(" ")}
                     </div>
@@ -272,7 +283,7 @@ const isInPriceRange = useCallback((price) => {
               </div>
             ))
           ) : (
-            <p>Tidak ada pondok yang cocok dengan pencarian Anda.</p>
+            <img src={notFound} alt="App Logo" className="mb-4 w-auto h-auto" />
           )}
         </div>
 

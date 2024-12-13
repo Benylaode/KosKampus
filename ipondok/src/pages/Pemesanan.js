@@ -41,6 +41,12 @@ const InvoiceForm = () => {
     }
   }, [pondok, invoiceData.isBulanan]);
 
+  const formatRupiah = (angkaStr) => {
+    const angka = parseFloat(angkaStr);
+    if (isNaN(angka)) return "";
+    return `Rp${angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setInvoiceData({ ...invoiceData, [name]: value });
@@ -155,17 +161,17 @@ const InvoiceForm = () => {
               <p>Nama Pondok</p>
               <p>{pondok.nama}</p>
             </div>
-            <div className="flex justify-between text-lg font-semibold">
+            <div className="flex justify-between text-lg">
               <p>Total Biaya</p>
-              <p>{invoiceData.totalBiaya.toFixed(2)}</p>
+              <p>{formatRupiah(invoiceData.totalBiaya.toFixed(2))}</p>
             </div>
-            <div className="flex justify-between text-lg font-semibold">
+            <div className="flex justify-between text-lg">
               <p>Biaya Admin</p>
-              <p>{invoiceData.biayaAdmin.toFixed(2)}</p>
+              <p>{formatRupiah(invoiceData.biayaAdmin.toFixed(2))}</p>
             </div>
             <div className="flex justify-between text-xl font-bold border-t pt-4">
               <p>Total Pembayaran</p>
-              <p>{(invoiceData.totalBiaya + invoiceData.biayaAdmin).toFixed(2)}</p>
+              <p>{formatRupiah((invoiceData.totalBiaya + invoiceData.biayaAdmin).toFixed(2))}</p>
             </div>
           </div>
 
