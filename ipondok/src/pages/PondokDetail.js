@@ -176,8 +176,16 @@ const PondokDetail = () => {
                         <h2 className="text-xl font-semibold mt-5">Aturan:</h2>
                         <p>{pondok?.aturan || "Aturan tidak tersedia"}</p>
                     </div>
+                    <div className='lg:hidden mb-10 mt-4'>
+                        <button className="bg-red-500 text-white w-full rounded-lg px-8 py-4 text-center cursor-pointer hover:bg-red-300"
+                        onClick={() => navigate(`/pondok/${pondok.id}/pesan`, { state: { pondok } })}>
+                        <span className="font-bold ">Pesan Sekarang</span>
+                        </button>
+                    </div>
+
 
                 </div>
+
             </div>
         </div>
     );
