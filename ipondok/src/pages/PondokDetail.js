@@ -60,6 +60,10 @@ const PondokDetail = () => {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+  const gambarCadangan = [
+    logo
+  ];
+  const gambarYangDigunakan = pondok?.gambar?.length > 0 ? pondok.gambar : gambarCadangan;
 
   return (
     <div className="font-sans lg:pl-10 pl-5 lg:pr-24 pr-5">
@@ -135,7 +139,7 @@ const PondokDetail = () => {
                   }}
               >
                 {/* Tampilkan gambar pertama sebagai slide pertama */}
-                {pondok?.gambar?.map((item, index) => (
+                {gambarYangDigunakan.map((item, index) => (
                   <SwiperSlide key={index}>
                     <div className="w-full h-full flex items-center justify-center">
                       <img
