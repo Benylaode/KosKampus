@@ -261,7 +261,7 @@ export default function Home() {
                   <img
                     src={pondok.gambar && pondok.gambar.length > 0 ? pondok.gambar[0].image : logo}
                     alt={pondok.nama}
-                    className="object-cover h-46 w-72 mt-4 mb-4 drop-shadow-xl"
+                    className="w-72 aspect-square object-contain mt-4 mb-4 drop-shadow-xl bg-gray-800"
                   />
                     <div className="text-base mt-0 mb-1 text-black font-bold drop-shadow-xl group-hover:text-white transition-colors">
                       {pondok.nama.split(" ").slice(0, 3).join(" ")}
