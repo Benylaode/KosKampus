@@ -139,7 +139,7 @@ const PondokDetail = () => {
                   <SwiperSlide key={index}>
                     <div className="w-full h-full flex items-center justify-center">
                       <img
-                        src={item.image}
+                        src={pondok?.gambar && pondok.gambar.length > 0 ? item.image : logo }
                         alt={`Slide ${index + 1}`}
                         className="w-full h-full object-cover rounded-lg cursor-pointer aspect-square"
                         onClick={() => openModal(item.image)}
