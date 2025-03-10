@@ -37,6 +37,11 @@ const Admin = () => {
             setLoadingDelete(null);
         }
     };
+    const formatRupiah = (angkaStr) => {
+        const angka = parseFloat(angkaStr);
+        if (isNaN(angka)) return "";
+        return `Rp${angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+    };
 
     useEffect(() => {
         if (!isSearching || searchQuery === "") {
@@ -124,7 +129,7 @@ const Admin = () => {
                                 <tr key={pondok.id} className="border">
                                     <td className="border p-2">{pondok.nama}</td>
                                     <td className="border p-2">{pondok.universitas}</td>
-                                    <td className="border p-2">{pondok.harga_bulan}</td>
+                                    <td className="border p-2">{formatRupiah(pondok.harga_bulan)}</td>
                                     <td className="border p-2">{pondok.tipe}</td>
                                     <td className="border p-2 space-x-2">
                                         <button
