@@ -111,6 +111,7 @@ export default function Home() {
     } else {
       setFilteredPondoks(searchResults);
       setPaginationVisible(false);
+      console.log(queryString)
     }
   }, [pondoks, searchResults, queryString, selectedUniversity, selectedPrice, selectedType, isSearching, isInPriceRange]);
 

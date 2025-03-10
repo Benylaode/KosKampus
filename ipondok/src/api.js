@@ -10,6 +10,8 @@ const axiosInstance = axios.create({
   },
 });
 
+
+
 /**
  * Fungsi untuk melakukan pencarian pondok berdasarkan query
  * @param {string} query - Kata kunci pencarian
@@ -34,15 +36,25 @@ export const searchPondok = async (query, page = 1, limit = 6) => {
 };
 
 
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token'); 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const newToken = await refreshLogin();
+        axiosInstance.defaults.headers.Authorization = `Bearer ${newToken}`;
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+        throw new Error('Token refresh failed');
+      }
+    }
+    return Promise.reject(error);
   }
-  return config;
-}, (error) => Promise.reject(error));
+);
 
-// Fungsi untuk login
 export const login = async (credentials) => {
   try {
     const response = await axiosInstance.post('/token/', credentials);
@@ -64,29 +76,21 @@ export const refreshLogin = async () => {
   try {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) throw new Error('Refresh token is missing.');
-
-    const response = await axiosInstance.post('/token/refresh/', {
-      refresh: refreshToken,
-    });
-
+    const response = await axiosInstance.post('/token/refresh/', { refresh: refreshToken });
     const { access_token } = response.data.data;
-
     localStorage.setItem('access_token', access_token);
-
-    console.log('Token refreshed successfully:', response.data);
     return access_token;
   } catch (error) {
-    console.error('Token refresh failed:', error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || 'Token refresh failed');
+    console.error('Token refresh failed:', error);
+    throw new Error('Token refresh failed');
   }
 };
 
-// Fungsi untuk registrasi
+
 export const register = async (userData) => {
   try {
     const response = await axiosInstance.post('/register/', userData);
 
-    // Menyesuaikan respons dengan struktur {"data": {...}}
     const result = response.data.data;
 
     console.log('Registration successful:', result);
@@ -97,12 +101,11 @@ export const register = async (userData) => {
   }
 };
 
-// Fungsi untuk mengambil profil pengguna
+
 export const fetchUserProfile = async () => {
   try {
     const response = await axiosInstance.get('/user/');
 
-    // Menyesuaikan respons dengan struktur {"data": {...}}
     const profile = response.data.data;
 
     console.log('User profile fetched:', profile);
@@ -113,11 +116,11 @@ export const fetchUserProfile = async () => {
   }
 };
 
-// Fungsi untuk mengambil data paginated (misalnya untuk order)
+
 export const fetchPaginatedData = async (endpoint) => {
   try {
     if (endpoint) {
-      // Panggil API dengan nextUrl
+
       const response = await axiosInstance.get(endpoint);
       console.log('Full Paginated Data:', response.data);
       return response.data;
@@ -165,11 +168,75 @@ export const listHarga = async () => {
   }
 };
 
+export const updatePondok = async (pondokId, pondokData) => {
+  try {
+    const response = await axiosInstance.put(`/pondok/${pondokId}/`, pondokData);
+    console.log('Update successful:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Update failed:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Update failed');
+  }
+};
+
+  export const addPondok = async (pondokData) => {
+    try {
+      const response = await axiosInstance.post('/pondok/', pondokData);
+      console.log('Addition successful:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Addition failed:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || 'Addition failed');
+    }
+  };
+
+export const deletePondok = async (pondokId) => {
+  try {
+    const response = await axiosInstance.delete(`/pondok/${pondokId}/`);
+    console.log('Delete successful:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Delete failed:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Delete failed');
+  }
+};
+
+export const uploadPondokImage = async (pondokId, imageFile) => {
+  try {
+    const formData = new FormData();
+    formData.append('gambar', imageFile);
+
+    const response = await axiosInstance.post(`/pondok/${pondokId}/upload-gambar/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    console.log('Image upload successful:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Image upload failed:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Image upload failed');
+  }
+};
+
+export const deletePondokImage = async (imageId) => {
+  try {
+    const response = await axiosInstance.delete(`/pondok/delete-gambar/${imageId}`);
+    
+    console.log('Image deletion successful:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Image deletion failed:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Image deletion failed');
+  }
+};
+
 
 
 export const OrderPondok = async (orderData) => {
   try {
-    const response = await axiosInstance.post('/order/', orderData);  // Kirim data order ke API
+    const response = await axiosInstance.post('/order/', orderData);  
 
     console.log('Order successful:', response.data);
     return response.data;

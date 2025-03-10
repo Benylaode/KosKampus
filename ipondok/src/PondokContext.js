@@ -13,13 +13,13 @@ export const PondokProvider = ({ children }) => {
   const [isSearching, setIsSearching] = useState(false); 
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fungsi untuk mengambil data paginasi
+
   const getPondoks = useCallback(async (page = 1) => {
     setLoading(true);
     try {
       const responseData = await fetchPaginatedData(`/pondok/?page=${page}`);
 
-      // Ekstrak data dan informasi paginasi
+
       console.log(responseData);
       const { results, total_pages } = responseData;
 

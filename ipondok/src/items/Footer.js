@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo.png"; 
+import koskampus from "../assets/logo.png";
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-300 p-4 bg-black">
-      <div className="flex-shrink-0 mt-8 mb-2">
-        <img src={logo} alt="Logo" className="max-w-full h-auto" /> {/* Ukuran logo disesuaikan */}
+    <footer className="bg-white border-t border-gray-300 my-10 p-4 bg-black">
+      <div className="flex-shrink-0 ">
+        <img src={koskampus} alt="Logo" className="w-24  h-auto" /> 
       </div>
       <hr/>
       <div className="flex justify-between items-center mt-6">

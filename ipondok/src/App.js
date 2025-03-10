@@ -1,19 +1,28 @@
 import React from "react";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import {Home, PondokDetail, Pemesanan} from "./pages/"; // Halaman utama
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {Home, PondokDetail, Pemesanan, Admin, Login} from "./pages/"; 
 import { PondokProvider } from './PondokContext';
-import './App.css'; // Ganti dengan nama file CSS Anda
+import ProtectedRoute from "./ProtectedRoute";
+import './App.css'; 
 
 function App() {
   return (
     <Router>
       <PondokProvider>
         <Routes>
-          {/* Route untuk halaman Home */}
           <Route path="/" element={<Home />} />
-          {/* Route untuk halaman Detail Pondok */}
           <Route path="/pondok/:id" element={<PondokDetail />} />
           <Route path="/pondok/:id/pesan" element={<Pemesanan />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </PondokProvider>
     </Router>
