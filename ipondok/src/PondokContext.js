@@ -4,12 +4,12 @@ import { fetchPaginatedData, searchPondok as searchPondokAPI } from './api';
 export const PondokContext = createContext();
 
 export const PondokProvider = ({ children }) => {
-  const [pondoks, setPondoks] = useState([]); // Data pondok untuk halaman saat ini
-  const [searchResults, setSearchResults] = useState([]); // Hasil pencarian
-  const [loading, setLoading] = useState(false); // Status loading
-  const [error, setError] = useState(null); // Status error
-  const [currentPage, setCurrentPage] = useState(1); // Halaman saat ini
-  const [totalPages, setTotalPages] = useState(1); // Total halaman dari paginasi
+  const [pondoks, setPondoks] = useState([]); 
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(null); 
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1); 
   const [isSearching, setIsSearching] = useState(false); 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -20,11 +20,10 @@ export const PondokProvider = ({ children }) => {
       const responseData = await fetchPaginatedData(`/pondok/?page=${page}`);
 
 
-      console.log(responseData);
       const { results, total_pages } = responseData;
 
-      setPondoks(results.data); // Set data pondok
-      setTotalPages(total_pages); // Total halaman // URL halaman sebelumnya
+      setPondoks(results.data); 
+      setTotalPages(total_pages); 
     } catch (err) {
       setError(err.message);
       console.error("Error fetching pondoks:", err);
@@ -35,28 +34,27 @@ export const PondokProvider = ({ children }) => {
 
   useEffect(() => {
     if (isSearching) {
-      // Jika sedang dalam mode pencarian
+
       searchPondok(searchQuery);
      
     } else {
-      // Jika sedang dalam mode data utama
       getPondoks(currentPage);
+      console.log(currentPage)
     }
   }, [currentPage, isSearching, searchQuery, getPondoks]);
 
-  // Handle search and update the results
   const searchPondok = async (query, currentPage) => {
     setLoading(true);
-    setIsSearching(true); // Aktifkan mode pencarian
+    setIsSearching(true); 
     setSearchQuery(query);
     try {
       const responseData = await searchPondokAPI(query, currentPage);
   
-      // Ekstrak data dan informasi paginasi dari hasil pencarian
+  
       const { results, total_pages } = responseData;
   
-      setSearchResults(results.data); // Set hasil pencarian
-      setTotalPages(total_pages); // Set total halaman // Set URL untuk halaman sebelumnya
+      setSearchResults(results.data);
+      setTotalPages(total_pages); 
     } catch (err) {
       setError(err.message);
       console.error("Error searching pondok:", err);

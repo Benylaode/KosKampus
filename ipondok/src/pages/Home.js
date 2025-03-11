@@ -147,7 +147,8 @@ export default function Home() {
           >
             {showOverlay && (
               <div className="flex flex-col items-center justify-center h-full">
-                <img src={koskampus} alt="App Logo" className="p-5 mb-4 w-auto h-auto" />
+                <img src={koskampus} alt="App Logo" className="p-5 mb-1 w-auto h-auto" />
+                <p className="text-white mb-4" >Peta Hanya Menampilkan Lokasi Pondok Yang Tertera Dibawah</p>
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                   onClick={toggleOverlay}

@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from "../items/Header";
 import Footer from "../items/Footer";
 import 'leaflet/dist/leaflet.css';
@@ -24,6 +25,7 @@ const Admin = () => {
     const [loadingDelete, setLoadingDelete] = useState(null);
     const [paginationVisible, setPaginationVisible] = useState(true);
     const [filteredPondoks, setFilteredPondoks] = useState([]);
+    const navigate = useNavigate();
 
     // Fungsi untuk menghapus pondok
     const handleDeletePondok = async (id) => {
@@ -43,9 +45,14 @@ const Admin = () => {
         return `Rp${angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
     };
 
+    const handleOrderClick = (pondok) => {
+        navigate('edit-order', { state: { pondok } });
+    };
+
     useEffect(() => {
         if (!isSearching || searchQuery === "") {
           setFilteredPondoks(pondoks);
+          
           setPaginationVisible(true);
         } else {
           setFilteredPondoks(searchResults);
@@ -59,26 +66,21 @@ const Admin = () => {
         setPaginationVisible(false);
     };
 
-    // Fungsi untuk kembali ke tampilan semua data
     const handleBackClick = () => {
         setSearchQuery("");
         setFilteredPondoks(pondoks);
         setPaginationVisible(true);
     };
 
-    // Fungsi untuk mengubah halaman
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
-
-    // Efek untuk mengupdate filteredPondoks berdasarkan searchResults atau pondoks
 
 
     return (
         <div className="font-sans min-h-screen bg-white-100">
             <Header />
             <div className="p-5 max-w-6xl mx-auto bg-white shadow-lg rounded-lg">
-                {/* Search Bar */}
                 <div className="mb-4 flex">
                     <input
                         type="text"
@@ -107,11 +109,9 @@ const Admin = () => {
                     </button>
                 </div>
 
-                {/* Loading dan Error */}
                 {loading && <p className="text-red-600">Loading...</p>}
                 {error && <p className="text-red-600">Error loading data.</p>}
 
-                {/* Tabel Pondok */}
                 <table className="w-full border-collapse border border-gray-300">
                     <thead>
                         <tr className="bg-red-200 text-red-800">
@@ -120,12 +120,11 @@ const Admin = () => {
                             <th className="border p-2">Harga</th>
                             <th className="border p-2">Tipe</th>
                             <th className="border p-2">Aksi</th>
+                            <th className="border p-2">Cek Orderan</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredPondoks
-                            .slice((currentPage - 1) * 10, currentPage * 10) // Paginasi data
-                            .map((pondok) => (
+                        {filteredPondoks.map((pondok) => (
                                 <tr key={pondok.id} className="border">
                                     <td className="border p-2">{pondok.nama}</td>
                                     <td className="border p-2">{pondok.universitas}</td>
@@ -146,12 +145,19 @@ const Admin = () => {
                                             {loadingDelete === pondok.id ? "Loading..." : "Hapus"}
                                         </button>
                                     </td>
+                                    <td className="border p-2">
+                                        <button
+                                            onClick={() => handleOrderClick(pondok)} 
+                                            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-700"
+                                        >
+                                            Orderan
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                     </tbody>
                 </table>
 
-                {/* Pagination Section */}
                 {paginationVisible && (
                     <div className="flex justify-center space-x-4 my-4">
                         <button
@@ -173,10 +179,10 @@ const Admin = () => {
                         </button>
                     </div>
                 )}
+                
             </div>
             <Footer />
 
-            {/* Modal Edit Pondok */}
             {selectedPondok && (
                 <EditPondokModal
                     pondok={selectedPondok}

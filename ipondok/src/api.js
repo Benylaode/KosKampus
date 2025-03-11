@@ -122,7 +122,6 @@ export const fetchPaginatedData = async (endpoint) => {
     if (endpoint) {
 
       const response = await axiosInstance.get(endpoint);
-      console.log('Full Paginated Data:', response.data);
       return response.data;
     }
     
@@ -138,7 +137,6 @@ export const listUniversitas = async () => {
   try {
     if (endpoint) {
       const response = await axiosInstance.get(endpoint)
-      console.log('Full Paginated Data:', response.data);
       return response.data;
       
     }
@@ -156,7 +154,6 @@ export const listHarga = async () => {
   try {
     if (endpoint) {
       const response = await axiosInstance.get(endpoint)
-      console.log('Full Paginated Data:', response.data);
       return response.data;
       
     }
@@ -243,5 +240,27 @@ export const OrderPondok = async (orderData) => {
   } catch (error) {
     console.error('Order failed:', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Order failed');
+  }
+};
+
+export const UpdateOrderPondok = async (orderId, updatedData) => {
+  try {
+    const response = await axiosInstance.put(`/order/${orderId}/`, updatedData);
+    console.log('Order updated successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Update order failed:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Update order failed');
+  }
+};
+
+export const DeleteOrderPondok = async (orderId) => {
+  try {
+    const response = await axiosInstance.delete(`/order/${orderId}/`);
+    console.log('Order deleted successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Delete order failed:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Delete order failed');
   }
 };
