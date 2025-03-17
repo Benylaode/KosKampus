@@ -176,22 +176,36 @@ export default function Home() {
             }`}
           >
             {showOverlay && (
-              <div className="flex flex-col items-center justify-center h-full">
-                <img src={koskampus} alt="App Logo" className="p-5 mb-1 w-auto h-auto" />
-                <p className="text-white text-sm md:text-md lg:text-md text-center">
-                  Peta hanya menampilkan lokasi <span className="underline">pondok</span> yang tertera di bawah.
+              <div className="flex flex-col items-center justify-center h-full bg-grey p-6 rounded-xl shadow-lg">
+                <img 
+                  src={koskampus} 
+                  alt="App Logo" 
+                  className="w-auto h-auto mb-4 drop-shadow-lg"
+                />
+                <p className="text-white text-center text-md md:text-base lg:text-md lg:mx-24 px-6  leading-relaxed">
+                  <span className="font-semibold text-red-400">KosKampus</span> adalah platform terbaik untuk mencari
+                  <span className="font-bold"> kos di Makassar</span> atau <span className="font-bold">pondok di Makassar</span> yang ramah mahasiswa.
+                  Temukan rekomendasi tempat tinggal dekat kampus dengan lokasi strategis dan lingkungan yang nyaman.
+                  Peta ini menampilkan lokasi kos dan pondok
+                   terbaik untuk mendukung aktivitas akademik Anda.
                 </p>
-                <p className="text-white text-sm md:text-md lg:text-md text-center mb-4">
-                  tekan pojok kanan atas peta untuk menutup.
-                </p>
+                
                 <button
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  className="mt-4 bg-red-500 text-white font-medium px-6 py-2 rounded-lg shadow-md hover:bg-red-600 transition-all"
                   onClick={toggleOverlay}
                 >
                   Lihat Peta
                 </button>
+                
+                <p className="text-white text-xs md:text-xs lg:text-xs text-center mt-4">
+                  Peta hanya menampilkan lokasi <span className="underline">pondok</span> yang tersedia di bawah.
+                </p>
+                <p className="text-white text-xs md:text-xs lg:text-xs text-center">
+                  Tekan pojok kanan atas peta untuk menutup.
+                </p>
               </div>
-            )}
+            )
+            }
 
           </div>
 

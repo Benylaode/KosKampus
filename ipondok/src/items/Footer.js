@@ -12,7 +12,7 @@ export default function Footer() {
       </div>
       <hr/>
       <div className="flex justify-between items-center mt-6">
-        <p className="text-gray-600">&copy; 2024 Your Company Name. All rights reserved.</p>
+        <p className="text-gray-600">&copy; 2024 KosKampus. All rights reserved.</p>
         <nav>
           <ul className="flex space-x-6">
             <li>
