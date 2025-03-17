@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import Maps from "../items/Maps";
 import Modal from "react-modal";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules"; // Impor modul Swiper
+import { Navigation, Pagination } from "swiper/modules"; 
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/image.png";
+import airLogo from "../assets/air.jpg";
+import bersihLogo from "../assets/kebersihan.jpg";
+import internetLogo from "../assets/internet.jpg";
 import "swiper/css";
-import "swiper/css/navigation"; // Impor CSS navigasi
-import "swiper/css/pagination"; // Impor CSS pagination
+import "swiper/css/navigation"; 
+import "swiper/css/pagination"; 
 
 Modal.setAppElement("#root");
 
@@ -68,16 +71,15 @@ const PondokDetail = () => {
   return (
     <div className="font-sans lg:pl-10 pl-5 lg:pr-24 pr-5">
     <div className="flex flex-row gap-5 fixed pt-5 pb-5 w-full bg-white z-20 pr-8 lg:pr-32">
-         {/* Tombol Kiri */}
          <div className="flex w-full lg:w-2/3 gap-5">
              <button 
-                 className="hidden md:block bg-red-500 text-white rounded-lg px-8 py-4 text-center cursor-pointer hover:bg-red-300"
+                 className="hidden md:block bg-red-500 text-white drop-shadow-md rounded-lg px-8 py-4 font-bold text-center cursor-pointer hover:bg-red-300"
                  onClick={() => window.history.back()}
              >
-                 back
+                 Back
              </button>
 
-             <button className="bg-red-500 text-white rounded-lg w-full px-8 py-4 text-center cursor-pointer">
+             <button className="bg-red-500 text-white rounded-lg w-full px-8 py-4 drop-shadow-md text-center cursor-pointer">
                  <span className="font-bold text-lg">{pondok?.nama || "Pondok Detail"}</span>
              </button>
          </div>
@@ -86,14 +88,12 @@ const PondokDetail = () => {
      </div>
 
      <div className="hidden lg:flex flex-1 w-1/3 top-5 flex-col gap-5 grid grid-rows-1 pr-32 fixed right-0 top-0 bg-white z-20">
-         {/* Tombol Harga per Bulan */}
          <button 
-             className="bg-red-500 text-white rounded-lg px-8 py-4 text-center cursor-pointer"
+             className="bg-red-500 text-white rounded-lg px-8 py-4 drop-shadow-md text-center cursor-pointer"
          >
              <span className="font-bold ">{formatRupiah(pondok.harga_bulan)} per bulan</span>
          </button>
-         
-         {/* Tombol Navigasi */}
+        
          {[
              { id: "Gambar", label: "Gambar" },
              { id: "Fasilitas", label: "Fasilitas" },
@@ -104,7 +104,7 @@ const PondokDetail = () => {
          ].map((item, index) => (
              <button 
                  key={index} 
-                 className="bg-white border-2 border-gray-700 rounded-lg px-8 py-4 text-center cursor-pointer hover:bg-red-300"
+                 className="bg-white border-2 border-gray-700 rounded-lg px-8 py-4 text-center drop-shadow-md cursor-pointer hover:bg-red-300"
                  onClick={() => scrollToSection(item.id)}
              >
                  <span className="font-bold ">{item.label}</span>
@@ -123,7 +123,7 @@ const PondokDetail = () => {
         <div className="flex-2 flex w-full lg:w-2/3 flex-col gap-5 relative top-20">
           {/* Gambar Utama */}
           <div className="flex flex-col gap-5" id="Gambar">
-            <div className="w-full">
+            <div className="w-full drop-shadow-md">
               <Swiper
                 modules={[Navigation, Pagination]} // Tambahkan modul Navigation dan Pagination
                 spaceBetween={10}
@@ -186,20 +186,38 @@ const PondokDetail = () => {
             Rating:
           </h2>
           <div className="grid grid-cols-3 grid-rows-1 gap-2 w-full mb-10">
-            {ratings.map((item) => (
+            {ratings.map((item) => {
+            let gambar;
+            switch (item.title) {
+              case 'Jaringan':
+                gambar = internetLogo; 
+                break;
+              case 'Air':
+                gambar = airLogo;
+                break;
+              case 'Kebersihan':
+                gambar = bersihLogo; 
+                break;
+              default:
+                gambar = logo; // Default image atau biarkan kosong
+                break;
+            }
+
+            return (
               <div
                 key={item.id}
                 className="flex items-center p-4 border border-gray-300 rounded-lg shadow-sm"
               >
                 <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full">
-                  <img src={logo} alt="Sinyal" className="w-6 h-6 text-red-500" />
+                  <img src={gambar} alt={item.title} className="w-6 h-6" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm text-gray-500">{item.title}</p>
                   <p className="text-lg font-bold text-gray-800">{item.value}</p>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
 
           {/* Aturan */}

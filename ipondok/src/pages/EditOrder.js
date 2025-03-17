@@ -53,7 +53,6 @@ const EditOrder = () => {
     };
     
 
-    // Fungsi untuk menghapus order
     const handleDeleteOrder = async (orderId) => {
         try {
             await DeleteOrderPondok(orderId);
@@ -85,6 +84,7 @@ const EditOrder = () => {
                             <th className="border p-2">Nama Pemesan</th>
                             <th className="border p-2">Tanggal Order</th>
                             <th className="border p-2">Tanggal Mulai</th>
+                            <th className="border p-2">WhatsApp buyer</th>
                             <th className="border p-2">Biaya</th>
                             <th className="border p-2">Bulanan</th>
                             <th className="border p-2">Tahun</th>
@@ -100,6 +100,7 @@ const EditOrder = () => {
                                     <td className="border p-2">{order.nama_buyer}</td>
                                     <td className="border p-2">{order.order_date}</td>
                                     <td className="border p-2">{order.tanggal_mulai}</td>
+                                    <td className="border p-2">{order.nomor_buyer}</td>
                                     <td className="border p-2">{order.total_biaya}</td>
                                     <td className="border p-2">
                                         {order.isBulanan ? (

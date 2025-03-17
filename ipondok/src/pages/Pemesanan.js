@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { OrderPondok } from '../api';  // Pastikan import OrderPondok
-import DatePicker from "react-datepicker"; // Import react-datepicker
-import "react-datepicker/dist/react-datepicker.css";  // Import style react-datepicker
+import { OrderPondok } from '../api';  
+import DatePicker from "react-datepicker"; 
+import "react-datepicker/dist/react-datepicker.css";  
 
 const InvoiceForm = () => {
   const location = useLocation();
   const { pondok } = location.state || {};
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [invoiceData, setInvoiceData] = useState({
     invoiceDate: new Date().toISOString().split("T")[0],
-    dueDate: new Date(), // Menggunakan objek Date untuk dueDate
+    dueDate: new Date(), 
     sellerName: "",
     sellerAddress: "",
     buyerName: "",
@@ -20,18 +25,25 @@ const InvoiceForm = () => {
     notes: "",
     tangga: new Date().toISOString(),
     isBulanan: true,
+    nomor: "",
     totalBiaya: 0,
     biayaAdmin: 0,
   });
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000); 
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     if (pondok) {
-      // Mengambil harga_bulan dan harga_tahun dari pondok
       const harga = invoiceData.isBulanan ? pondok.harga_bulan : pondok.harga_tahun;
 
-      // Menghitung total biaya dan biaya admin
       const totalBiaya = parseFloat(harga);
-      const biayaAdmin = totalBiaya * 0.1; // 10% dari total biaya
+      const biayaAdmin = invoiceData.isBulanan ? totalBiaya * 0.06 : totalBiaya * 0.008; 
 
       setInvoiceData((prevData) => ({
         ...prevData,
@@ -63,7 +75,19 @@ const InvoiceForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); 
 
+    if (
+      !invoiceData.buyerEmail ||
+      !invoiceData.buyerName ||
+      !invoiceData.nomor ||
+      !invoiceData.dueDate
+    ) {
+      showPopupMessage("Harap isi semua field yang wajib diisi!", true);
+      setIsSubmitting(false);
+      return; 
+    }
+  
     const dataToSend = {
       pondok_id: invoiceData.pondok_id,
       email_buyer: invoiceData.buyerEmail,
@@ -71,49 +95,72 @@ const InvoiceForm = () => {
       nama_buyer: invoiceData.buyerName,
       status: "pending",
       isBulanan: invoiceData.isBulanan,
-      tanggal_mulai: invoiceData.dueDate.toISOString().split("T")[0], // Mengonversi date ke string
+      tanggal_mulai: invoiceData.dueDate.toISOString().split("T")[0], 
       tangga: invoiceData.tangga,
+      nomor_buyer : invoiceData.nomor,
       biaya_admin: invoiceData.biayaAdmin,
-      total_biaya: invoiceData.totalBiaya,
+      total_biaya: invoiceData.totalBiaya + invoiceData.biayaAdmin,
     };
-
+  
     try {
-      // Panggil API untuk membuat order
-      const result = await OrderPondok(dataToSend);  // Kirim data ke API
-      console.log(result);
-      alert("Order successfully created!");
+      const result = await OrderPondok(dataToSend);
+      showPopupMessage(result.message + ", Check Your Email", false);
     } catch (error) {
       console.error("Error during order creation:", error);
-      alert("An error occurred, please try again.");
+      showPopupMessage("An error occurred, please try again.", true);
+    } finally {
+      setIsSubmitting(false); 
     }
   };
+  const showPopupMessage = (message, error) => {
+    setPopupMessage(message);
+    setIsError(error);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 3000);
+};
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-red-100">
+        <div className="loading-spinner"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="font-sans p-8 bg-red-100 min-h-screen">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-8">
         <h2 className="text-2xl font-bold text-red-600 mb-6">Form Pemesanan</h2>
         <form onSubmit={handleSubmit}>
-          {/* Informasi Invoice */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block font-semibold text-gray-700">Due Date</label>
+              <label className="block font-semibold text-gray-700">Tanggal Masuk</label>
               <DatePicker
                 selected={invoiceData.dueDate}
                 onChange={handleDateChange}
                 className="border w-full p-2 rounded focus:ring-2 focus:ring-red-400"
-                dateFormat="dd-MM-yyyy"  // Format tampilan tanggal
-                minDate={new Date()}  // Membatasi tanggal untuk tidak memilih tanggal di masa lalu
+                dateFormat="dd-MM-yyyy"  
+                minDate={new Date()}  
               />
             </div>
           </div>
 
-          {/* Informasi Pembeli */}
           <div className="mb-4">
-            <label className="block font-semibold text-gray-700">Buyer Email</label>
+            <label className="block font-semibold text-gray-700">Email Pembeli</label>
             <input
               type="text"
               name="buyerEmail"
               value={invoiceData.buyerEmail}
+              onChange={handleInputChange}
+              className="border w-full p-2 rounded focus:ring-2 focus:ring-red-400"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold text-gray-700">Nomor WhatsApp</label>
+            <input
+              type="text"
+              name="nomor"
+              value={invoiceData.nomor}
               onChange={handleInputChange}
               className="border w-full p-2 rounded focus:ring-2 focus:ring-red-400"
             />
@@ -129,8 +176,6 @@ const InvoiceForm = () => {
             />
           </div>
 
-
-          {/* Pilihan Bulanan atau Tahunan */}
           <div className="mb-4">
             <label className="block font-semibold text-gray-700">Pilih Durasi</label>
             <select
@@ -144,7 +189,6 @@ const InvoiceForm = () => {
             </select>
           </div>
 
-          {/* Catatan */}
           <div className="mb-4">
             <label className="block font-semibold text-gray-700">Notes</label>
             <textarea
@@ -155,7 +199,6 @@ const InvoiceForm = () => {
             />
           </div>
 
-          {/* Menampilkan total biaya dan biaya admin */}
           <div className="mb-4 border-t pt-4">
           <div className="flex justify-between text-lg font-semibold">
               <p>Nama Pondok</p>
@@ -175,17 +218,29 @@ const InvoiceForm = () => {
             </div>
           </div>
 
-          {/* Tombol Submit */}
           <button
             type="submit"
-            className="bg-red-600 text-white px-6 py-2 rounded shadow hover:bg-red-700"
+            className="bg-red-600 text-white px-6 py-2 rounded shadow hover:bg-red-700 flex items-center justify-center"
+            disabled={isSubmitting} 
           >
-            Submit
+            {isSubmitting ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 font-bold border-white"></div>
+                <span className="ml-2">Mememsan...</span>
+              </div>
+            ) : (
+              "Pesan"
+            )}
           </button>
         </form>
+        {showPopup && (
+                <div className={`popup ${isError ? "error" : "success"}`}>
+                    {popupMessage}
+                </div>
+            )}
         <button
           onClick={() => window.history.back()}
-          className="bg-red-600 text-white px-6 py-2 mt-5 rounded shadow hover:bg-red-700"
+          className="bg-red-600 text-white px-6 py-2 mt-5 font-bold rounded shadow hover:bg-red-700"
         >
           Back
         </button>

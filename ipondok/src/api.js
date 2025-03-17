@@ -1,15 +1,13 @@
 import axios from 'axios';
 
-// Konfigurasi dasar Axios
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
-  timeout: 10000, // 10 detik timeout
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
 });
-
 
 
 /**
@@ -23,7 +21,7 @@ export const searchPondok = async (query, page = 1, limit = 6) => {
   try {
     if (endpoint) {
       const response = await axiosInstance.get(endpoint)
-      console.log('Full Paginated Data:', response.data);
+      
       return response.data;
       
     }
@@ -64,8 +62,7 @@ export const login = async (credentials) => {
     localStorage.setItem('access_token', access_token);
     localStorage.setItem('refresh_token', refresh_token);
 
-    console.log('Login successful:', response.data);
-    return response.data;
+      return response.data;
   } catch (error) {
     console.error('Login failed:', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Login failed');
@@ -93,8 +90,7 @@ export const register = async (userData) => {
 
     const result = response.data.data;
 
-    console.log('Registration successful:', result);
-    return result;
+      return result;
   } catch (error) {
     console.error('Registration failed:', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Registration failed');
@@ -108,7 +104,6 @@ export const fetchUserProfile = async () => {
 
     const profile = response.data.data;
 
-    console.log('User profile fetched:', profile);
     return profile;
   } catch (error) {
     console.error('Failed to fetch user profile:', error.response?.data || error.message);
@@ -168,8 +163,7 @@ export const listHarga = async () => {
 export const updatePondok = async (pondokId, pondokData) => {
   try {
     const response = await axiosInstance.put(`/pondok/${pondokId}/`, pondokData);
-    console.log('Update successful:', response.data);
-    return response.data;
+       return response.data;
   } catch (error) {
     console.error('Update failed:', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Update failed');
@@ -179,7 +173,7 @@ export const updatePondok = async (pondokId, pondokData) => {
   export const addPondok = async (pondokData) => {
     try {
       const response = await axiosInstance.post('/pondok/', pondokData);
-      console.log('Addition successful:', response.data);
+      
       return response.data;
     } catch (error) {
       console.error('Addition failed:', error.response?.data || error.message);
@@ -190,8 +184,7 @@ export const updatePondok = async (pondokId, pondokData) => {
 export const deletePondok = async (pondokId) => {
   try {
     const response = await axiosInstance.delete(`/pondok/${pondokId}/`);
-    console.log('Delete successful:', response.data);
-    return response.data;
+       return response.data;
   } catch (error) {
     console.error('Delete failed:', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Delete failed');
@@ -209,7 +202,7 @@ export const uploadPondokImage = async (pondokId, imageFile) => {
       },
     });
 
-    console.log('Image upload successful:', response.data);
+
     return response.data;
   } catch (error) {
     console.error('Image upload failed:', error.response?.data || error.message);
@@ -221,7 +214,6 @@ export const deletePondokImage = async (imageId) => {
   try {
     const response = await axiosInstance.delete(`/pondok/delete-gambar/${imageId}`);
     
-    console.log('Image deletion successful:', response.data);
     return response.data;
   } catch (error) {
     console.error('Image deletion failed:', error.response?.data || error.message);
@@ -235,8 +227,7 @@ export const OrderPondok = async (orderData) => {
   try {
     const response = await axiosInstance.post('/order/', orderData);  
 
-    console.log('Order successful:', response.data);
-    return response.data;
+      return response.data;
   } catch (error) {
     console.error('Order failed:', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Order failed');
@@ -246,7 +237,7 @@ export const OrderPondok = async (orderData) => {
 export const UpdateOrderPondok = async (orderId, updatedData) => {
   try {
     const response = await axiosInstance.put(`/order/${orderId}/`, updatedData);
-    console.log('Order updated successfully:', response.data);
+ 
     return response.data;
   } catch (error) {
     console.error('Update order failed:', error.response?.data || error.message);
@@ -257,7 +248,6 @@ export const UpdateOrderPondok = async (orderId, updatedData) => {
 export const DeleteOrderPondok = async (orderId) => {
   try {
     const response = await axiosInstance.delete(`/order/${orderId}/`);
-    console.log('Order deleted successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Delete order failed:', error.response?.data || error.message);

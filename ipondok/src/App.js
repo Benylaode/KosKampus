@@ -1,6 +1,6 @@
 import React from "react";
 import { HashRouter as Router, Routes, Route, Navigate, Outlet} from "react-router-dom";
-import {Home, PondokDetail, Pemesanan, Admin, Login, EditOrder} from "./pages/"; 
+import {Home, PondokDetail, Pemesanan, Admin, Login, EditOrder, TentangKami, HakKewajiban, SyaratKetentuan} from "./pages/"; 
 import { PondokProvider } from './PondokContext';
 import ProtectedRoute from "./ProtectedRoute";
 import './App.css'; 
@@ -14,6 +14,9 @@ function App() {
           <Route path="/pondok/:id" element={<PondokDetail />} />
           <Route path="/pondok/:id/pesan" element={<Pemesanan />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/TentangKami" element={<TentangKami />} />
+          <Route path="/HakKewajiban" element={<HakKewajiban />} />
+          <Route path="/SyaratKetentuan" element={<SyaratKetentuan />} />
           <Route
             path="/admin"
               element={

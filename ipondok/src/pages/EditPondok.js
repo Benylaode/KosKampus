@@ -46,22 +46,19 @@ const EditPondokModal = ({ pondok, onClose }) => {
         }
     };
 
-    // Fungsi untuk menghapus gambar yang sudah ada
     const handleDeleteImage = (imageId) => {
         setFormData(prevState => ({
             ...prevState,
             gambar: prevState.gambar.filter(img => img.id !== imageId)
         }));
 
-        setDeletedImages(prev => [...prev, imageId]); // Tandai gambar untuk dihapus di API
+        setDeletedImages(prev => [...prev, imageId]); 
     };
 
-    // Fungsi untuk menghapus gambar baru yang dipilih
     const handleRemoveSelectedImage = (index) => {
         setSelectedImages(prevImages => prevImages.filter((_, i) => i !== index));
     };
 
-    // Fungsi untuk menyimpan data pondok
     const handleSave = async () => {
         setLoading(true);
         try {
@@ -84,10 +81,8 @@ const EditPondokModal = ({ pondok, onClose }) => {
             }
 
 
-            // Tutup modal
             onClose();
 
-            // Reload halaman setelah berhasil menyimpan
             window.location.reload();
         } catch (error) {
             console.error('Gagal menyimpan pondok:', error);

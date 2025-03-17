@@ -4,3 +4,6 @@ export { default as PondokDetail } from "./PondokDetail";
 export { default as Login } from "./Login";
 export { default as Admin } from "./Admin";
 export { default as EditOrder } from "./EditOrder";
+export { default as SyaratKetentuan } from "./SyaratKetentuan";
+export { default as HakKewajiban } from "./HakKewajiban";
+export { default as TentangKami } from "./TentangKami";

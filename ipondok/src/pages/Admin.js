@@ -27,7 +27,6 @@ const Admin = () => {
     const [filteredPondoks, setFilteredPondoks] = useState([]);
     const navigate = useNavigate();
 
-    // Fungsi untuk menghapus pondok
     const handleDeletePondok = async (id) => {
         setLoadingDelete(id);
         try {

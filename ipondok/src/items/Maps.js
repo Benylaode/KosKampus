@@ -2,28 +2,24 @@ import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import icon from "../assets/logo.png";
+import icon from "../assets/pointer.png";
 
 export default function Maps({ pondoks, navigate, error }) {
-  const [mapCenter, setMapCenter] = useState({ lat: -5.147665, lng: 119.432732 }); // Nilai default
+  const [mapCenter, setMapCenter] = useState({ lat: -5.147665, lng: 119.432732 }); 
 
   useEffect(() => {
     if (Object.keys(pondoks).length > 0) {
       const firstPondok = Object.values(pondoks)[0];
   
-      // Parsing latitude dan longitude
       const latitude = parseFloat(firstPondok.latitude);
       const longitude = parseFloat(firstPondok.longitude);
   
-      // Pengecekan apakah latitude dan longitude valid
       if (!latitude || !longitude) {
-        // Jika tidak valid, kembali ke nilai default
         setMapCenter({
-          lat: -5.147665, // nilai default untuk lat
-          lng: 119.432732, // nilai default untuk lng
+          lat: -5.147665, 
+          lng: 119.432732, 
         });
       } else {
-        // Jika valid, set nilai lat dan lng dari pondok pertama
         setMapCenter({
           lat: latitude,
           lng: longitude,
@@ -32,7 +28,8 @@ export default function Maps({ pondoks, navigate, error }) {
   
       console.log(Object.keys(pondoks).length);
     }
-  }, [pondoks]); // Memantau perubahan pada pondoks
+  }, [pondoks]); 
+
   
   
   const customMarkerIcon = new L.Icon({
@@ -48,6 +45,7 @@ export default function Maps({ pondoks, navigate, error }) {
     if (isNaN(angka)) return "";
     return `Rp${angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   }
+
 
   return (
     <div className="w-full  rounded-lg overflow-hidden m-0 p-0 bg-grey-900 border border-grey-900 shadow-lg">

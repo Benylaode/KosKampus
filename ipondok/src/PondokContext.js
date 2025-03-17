@@ -13,7 +13,6 @@ export const PondokProvider = ({ children }) => {
   const [isSearching, setIsSearching] = useState(false); 
   const [searchQuery, setSearchQuery] = useState('');
 
-
   const getPondoks = useCallback(async (page = 1) => {
     setLoading(true);
     try {
@@ -39,7 +38,6 @@ export const PondokProvider = ({ children }) => {
      
     } else {
       getPondoks(currentPage);
-      console.log(currentPage)
     }
   }, [currentPage, isSearching, searchQuery, getPondoks]);
 

@@ -27,6 +27,7 @@ export default function Home() {
   } = useContext(PondokContext);
 
   const [filteredPondoks, setFilteredPondoks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUniversity, setSelectedUniversity] = useState("");
   const [selectedPrice, setSelectedPrice] = useState("");
@@ -103,6 +104,22 @@ export default function Home() {
   }, [selectedPrice]);
 
   useEffect(() => {
+    const observer = new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      const isComplete = entries.every((entry) => entry.startTime > 0);
+
+      if (isComplete) {
+        setIsLoading(false);
+        observer.disconnect();
+      }
+    });
+
+    observer.observe({ entryTypes: ["resource", "paint"] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     fetchHarga();
     fetchUniversities();
     if (!isSearching || queryString === "") {
@@ -111,7 +128,6 @@ export default function Home() {
     } else {
       setFilteredPondoks(searchResults);
       setPaginationVisible(false);
-      console.log(queryString)
     }
   }, [pondoks, searchResults, queryString, selectedUniversity, selectedPrice, selectedType, isSearching, isInPriceRange]);
 
@@ -136,9 +152,23 @@ export default function Home() {
     setShowOverlay(!showOverlay);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen bg-grey-100">
+        <h1 className="font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center">
+          <span className="text-red-500">Kos</span>Kampus
+        </h1>
+        <div className="loading-spinner mb-4"></div>
+        <p className="text-gray-700 font-semibold text-lg sm:text-sm md:text-md lg:text-xl text-center px-4 mt-2">
+          Selamat datang di KosKampus
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="inset-0 bg-gray-100 -z-10">
+      <div className="inset-0 bg-white -z-10">
         <div className="relative w-full h-1/4 mx-auto">
           <div
             className={`absolute top-0 left-0 w-full h-full transition-all duration-500 ${
@@ -148,7 +178,12 @@ export default function Home() {
             {showOverlay && (
               <div className="flex flex-col items-center justify-center h-full">
                 <img src={koskampus} alt="App Logo" className="p-5 mb-1 w-auto h-auto" />
-                <p className="text-white mb-4" >Peta Hanya Menampilkan Lokasi Pondok Yang Tertera Dibawah</p>
+                <p className="text-white text-sm md:text-md lg:text-md text-center">
+                  Peta hanya menampilkan lokasi <span className="underline">pondok</span> yang tertera di bawah.
+                </p>
+                <p className="text-white text-sm md:text-md lg:text-md text-center mb-4">
+                  tekan pojok kanan atas peta untuk menutup.
+                </p>
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                   onClick={toggleOverlay}
@@ -240,7 +275,7 @@ export default function Home() {
           </button>
             <button
               onClick={handleBackClick}
-              className="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white  shadow-md"
+              className="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white font-bold shadow-md"
             >
               Back
             </button>
@@ -249,68 +284,84 @@ export default function Home() {
       </div>
         {/* Filtered Pondok List */}
         <div className="flex flex-wrap justify-center">
-          {loading && <p>Loading...</p>}
-          {filteredPondoks.length > 0 ? (
-            filteredPondoks.map((pondok) => (
-              <div
-                key={pondok.id}
-                className="w-auto rounded-lg overflow-hidden m-1 mb-5 bg-white flex flex-col"
-                style={{ cursor: 'pointer' }}
-                onClick={() => navigate(`/pondok/${pondok.id}`, { state: { pondok } })}
-              >
-                <div className="flex flex-col items-start rounded h-full border border-grey group hover:bg-red-900">
-                  <div className="pl-8 pr-8 pb-3">
-                  <img
-                    src={pondok.gambar && pondok.gambar.length > 0 ? pondok.gambar[0].image : logo}
-                    alt={pondok.nama}
-                    className="w-72 aspect-square object-contain mt-4 mb-4 drop-shadow-xl bg-gray-800"
-                  />
-                    <div className="text-base mt-0 mb-1 text-black font-bold drop-shadow-xl group-hover:text-white transition-colors">
-                      {pondok.nama.split(" ").slice(0, 3).join(" ")}
-                    </div>
-                    <div className="text-base text-black drop-shadow-xl group-hover:text-white transition-colors">
-                      {pondok.universitas}
-                    </div>
-                    <div className="text-base text-black drop-shadow-xl group-hover:text-white transition-colors">
-                      {formatRupiah(pondok.harga_bulan)} per bulan
-                    </div>
-                    <div className="text-base text-black drop-shadow-xl group-hover:text-white transition-colors">
-                      Tersedia {pondok.jumlah_kamar} kamar
-                    </div>
-                    <div className="text-base text-black drop-shadow-xl group-hover:text-white transition-colors">
-                      {pondok.tipe}
+          {loading ? (<div className="loading-spinner mb-4"></div>) : (
+            filteredPondoks.length > 0 ? (
+              filteredPondoks.map((pondok) => (
+                <div
+                  key={pondok.id}
+                  className="w-auto rounded-lg overflow-hidden m-1 mb-5 bg-grey-200 drop-shadow-2xl flex flex-col"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => navigate(`/pondok/${pondok.id}`, { state: { pondok } })}
+                >
+                  <div className="flex flex-col items-start rounded h-full border-2 drop-shadow-2xl border-red-900 group hover:bg-red-900">
+                    <div className="pl-8 pr-8 bg-grey-100 pb-3">
+                    <img
+                      src={pondok.gambar && pondok.gambar.length > 0 ? pondok.gambar[0].image : logo}
+                      alt={pondok.nama}
+                      className="w-72 aspect-square object-contain mt-4 mb-4 drop-shadow-xl bg-white"
+                    />
+                      <div className="text-base mt-0 mb-1 text-black font-bold drop-shadow-xl group-hover:text-white transition-colors">
+                        {pondok.nama.split(" ").slice(0, 3).join(" ")}
+                      </div>
+                      <div className="text-base text-black drop-shadow-xl group-hover:text-white transition-colors">
+                        {pondok.universitas}
+                      </div>
+                      <div className="text-base text-black drop-shadow-xl group-hover:text-white transition-colors">
+                        {formatRupiah(pondok.harga_bulan)} per bulan
+                      </div>
+                      <div className="text-base text-black drop-shadow-xl group-hover:text-white transition-colors">
+                        Tersedia {pondok.jumlah_kamar} kamar
+                      </div>
+                      <div className="text-base text-black drop-shadow-xl group-hover:text-white transition-colors">
+                        {pondok.tipe}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <img src={notFound} alt="App Logo" className="mb-4 w-auto h-auto" />
+              ))
+            ) : (
+              <img src={notFound} alt="App Logo" className="mb-4 w-auto h-auto" />
+            )
           )}
+          
         </div>
 
         {/* Pagination Section */}
         {paginationVisible && (
-          <div className="flex justify-center space-x-4 my-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage <= 1}
-              className="bg-red-500 text-white px-6 py-2 rounded-lg cursor-pointer hover:bg-red-600"
-            >
-              Previous
-            </button>
-            <span>
-              Page {currentPage} of {totalPages}
+        <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 my-6">
+          {/* Tombol Previous */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
+            className={`
+              bg-red-500 text-white px-6 py-2 rounded-lg transition-all duration-300 
+              ${currentPage <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-600 hover:shadow-lg'}
+              focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+            `}
+          >
+            Previous
+          </button>
+
+        
+          <div className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg shadow-sm">
+            <span className="text-gray-700 font-medium">
+             <span className="text-red-500">{currentPage}</span> of {totalPages}
             </span>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage >= totalPages}
-              className="bg-red-500 text-white px-6 py-2 rounded-lg cursor-pointer hover:bg-red-600"
-            >
-              Next
-            </button>
           </div>
-        )}
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages}
+            className={`
+              bg-red-500 text-white px-6 py-2 rounded-lg transition-all duration-300 
+              ${currentPage >= totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-600 hover:shadow-lg'}
+              focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+            `}
+          >
+            Next
+          </button>
+        </div>
+      )}
 
         <div>
           <Footer />
