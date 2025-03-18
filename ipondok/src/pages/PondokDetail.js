@@ -37,11 +37,12 @@ const PondokDetail = () => {
     setModalIsOpen(false);
   };
 
-  function formatRupiah(angkaStr) {
+  const formatRupiah = (angkaStr) => {
     const angka = parseFloat(angkaStr);
     if (isNaN(angka)) return "";
+    if (angka === 0) return "Tidak Melayani Pesanan";
     return `Rp${angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
-  }
+  };
 
   const processString = (data) => {
     const cleanedData = data.replace(/\s+dan\s+/g, ",");
