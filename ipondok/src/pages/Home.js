@@ -86,8 +86,10 @@ export default function Home() {
   const formatRupiah = (angkaStr) => {
     const angka = parseFloat(angkaStr);
     if (isNaN(angka)) return "";
+    if (angka === 0) return "Tidak Melayani Pesanan";
     return `Rp${angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   };
+  
 
   const isInPriceRange = useCallback((price) => {
     const priceNumber = parseFloat(price);
@@ -170,6 +172,16 @@ export default function Home() {
     <>
       <div className="inset-0 bg-white -z-10">
         <div className="relative w-full h-1/4 mx-auto">
+          <head>
+          <meta name="robots" content="index, follow"/>
+          <meta name="viewport" content="width=device-width, initial-scale=0.6"/>
+          <meta property="og:url" content="https://koskampus.com"/>
+          <meta property="og:description" content="KosKampus membantu mahasiswa menemukan kos dan pondok terbaik di Makassar. KosKampus adalah platform terbaik untuk mencari
+                  kos di Makassar atau pondok di Makassar  yang ramah mahasiswa.
+                  Temukan rekomendasi tempat tinggal dekat kampus dengan lokasi strategis dan lingkungan yang nyaman.
+                  Peta ini menampilkan lokasi kos dan pondok
+                   terbaik untuk mendukung aktivitas akademik Anda"/>
+          </head>
           <div
             className={`absolute top-0 left-0 w-full h-full transition-all duration-500 ${
               showOverlay ? 'backdrop-blur-sm bg-gray-800 bg-opacity-50 z-10' : ''
@@ -182,13 +194,14 @@ export default function Home() {
                   alt="App Logo" 
                   className="w-auto h-auto mb-4 drop-shadow-lg"
                 />
-                <p className="text-white text-center text-md md:text-base lg:text-md lg:mx-24 px-6  leading-relaxed">
+                
+                <h3 className="text-white text-center text-md md:text-base lg:text-md lg:mx-24 px-6  leading-relaxed">
                   <span className="font-semibold text-red-400">KosKampus</span> adalah platform terbaik untuk mencari
                   <span className="font-bold"> kos di Makassar</span> atau <span className="font-bold">pondok di Makassar</span> yang ramah mahasiswa.
                   Temukan rekomendasi tempat tinggal dekat kampus dengan lokasi strategis dan lingkungan yang nyaman.
                   Peta ini menampilkan lokasi kos dan pondok
                    terbaik untuk mendukung aktivitas akademik Anda.
-                </p>
+                </h3>
                 
                 <button
                   className="mt-4 bg-red-500 text-white font-medium px-6 py-2 rounded-lg shadow-md hover:bg-red-600 transition-all"
