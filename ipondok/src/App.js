@@ -4,9 +4,11 @@ import {Home, PondokDetail, Pemesanan, Admin, Login, EditOrder, TentangKami, Hak
 import { PondokProvider } from './PondokContext';
 import ProtectedRoute from "./ProtectedRoute";
 import './App.css'; 
+import { HelmetProvider } from "react-helmet-async";
 
 function App() {
   return (
+    <HelmetProvider>
     <Router>
       <PondokProvider>
         <Routes>
@@ -32,6 +34,7 @@ function App() {
         </Routes>
       </PondokProvider>
     </Router>
+    </HelmetProvider>
   );
 }
 

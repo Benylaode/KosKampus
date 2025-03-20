@@ -1,9 +1,16 @@
 import React from 'react';
 import Header from "../items/Header";
 import Footer from "../items/Footer";
+import SEO from "../SEO";
 
 const SyaratKetentuan = () => {
     return (
+        <>
+    <SEO 
+        title="Syarat dan Ketentuan | Nama Aplikasi" 
+        description="KosKampus hanya sebagai perantara informasi dan pembayaran dari pemilik kos, tidak bertanggung jawab atas kesalahan atau ketidaksesuaian informasi yang diberikan oleh mitra." 
+      />
+     
         <div className="font-sans min-h-screen bg-gray-100">
             <Header />
             <div className="p-5 max-w-6xl mx-auto bg-white shadow-lg rounded-lg">
@@ -89,6 +96,7 @@ const SyaratKetentuan = () => {
             </div>
             <Footer />
         </div>
+        </>
     );
 };
 

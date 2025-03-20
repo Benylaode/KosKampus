@@ -1,9 +1,20 @@
 import React from 'react';
 import Header from "../items/Header";
 import Footer from "../items/Footer";
+import SEO from "../SEO";
 
 const HakKewajiban = () => {
     return (
+        <>
+    <SEO 
+        title="Hak dan Kewajiban | Nama Aplikasi" 
+        description="Mengakses informasi kos yang tersedia di platform KosKampus secara gratis.
+        Melakukan pencarian kos berdasarkan fitur yang tersedia.
+        Mendapatkan informasi yang akurat dan terkini dari pemilik kos.
+        Menghubungi narahubung KosKampus untuk informasi lebih lanjut.
+        Melaporkan ketidaksesuaian informasi atau kendala dalam transaksi melalui layanan pengaduan KosKampus.
+        Mengajukan komplain atau refund sesuai ketentuan yang berlaku jika layanan yang diberikan tidak sesuai dengan yang ditampilkan." 
+      />
         <div className="font-sans min-h-screen bg-gray-100">
             <Header />
             <div className="p-5 max-w-6xl mx-auto bg-white shadow-lg rounded-lg">
@@ -53,6 +64,7 @@ const HakKewajiban = () => {
             </div>
             <Footer />
         </div>
+        </>
     );
 };
 

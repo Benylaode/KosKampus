@@ -26,7 +26,6 @@ export default function Maps({ pondoks, navigate, error }) {
         });
       }
   
-      console.log(Object.keys(pondoks).length);
     }
   }, [pondoks]); 
 

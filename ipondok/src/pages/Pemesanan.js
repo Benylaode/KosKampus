@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { OrderPondok } from '../api';  
 import DatePicker from "react-datepicker"; 
 import "react-datepicker/dist/react-datepicker.css";  
+import SEO from "../SEO";
 
 const InvoiceForm = () => {
   const location = useLocation();
@@ -122,13 +123,24 @@ const InvoiceForm = () => {
 
   if (isLoading) {
     return (
+      <>
+        <SEO 
+          title="Pemesanan| KosKampus" 
+          description="Cobalah Mememesan Kos Murah di Makassar" 
+        />   
       <div className="flex justify-center items-center h-screen bg-red-100">
         <div className="loading-spinner"></div>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+        <SEO 
+          title="Pemesanan| KosKampus" 
+          description="Cobalah Mememesan Kos Murah di Makassar" 
+        /> 
     <div className="font-sans p-8 bg-red-100 min-h-screen">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-8">
         <h2 className="text-2xl font-bold text-red-600 mb-6">Form Pemesanan</h2>
@@ -247,6 +259,7 @@ const InvoiceForm = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

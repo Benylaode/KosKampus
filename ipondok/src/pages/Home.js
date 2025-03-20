@@ -12,6 +12,7 @@ import hrg from "../assets/src/harga.png";
 import tipe from "../assets/src/tipe.png"; 
 import univ from "../assets/src/universitas.png"; 
 import src_white from "../assets/src/src_putih.png"; 
+import SEO from "../SEO";
 
 export default function Home() {
   const {
@@ -156,6 +157,15 @@ export default function Home() {
 
   if (isLoading) {
     return (
+      <>
+      <SEO 
+        title="Beranda | KosKampus" 
+        description="Selamat datang di aplikasi kami. Kami adalah KosKampus adalah platform terbaik untuk mencari 
+        kos di Makassar atau pondok di Makassar yang ramah mahasiswa. 
+        Temukan rekomendasi tempat tinggal dekat kampus dengan lokasi 
+        strategis dan lingkungan yang nyaman. Peta ini menampilkan lokasi kos 
+        dan pondok terbaik untuk mendukung aktivitas akademik Anda." 
+      />
       <div className="flex flex-col justify-center items-center h-screen bg-grey-100">
         <h1 className="font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center">
           <span className="text-red-500">Kos</span>Kampus
@@ -165,11 +175,20 @@ export default function Home() {
           Selamat datang di KosKampus
         </p>
       </div>
+      </>
     );
   }
 
   return (
     <>
+      <SEO 
+        title="Beranda | KosKampus" 
+        description="Selamat datang di aplikasi kami. Kami adalah KosKampus adalah platform terbaik untuk mencari 
+        kos di Makassar atau pondok di Makassar yang ramah mahasiswa. 
+        Temukan rekomendasi tempat tinggal dekat kampus dengan lokasi 
+        strategis dan lingkungan yang nyaman. Peta ini menampilkan lokasi kos 
+        dan pondok terbaik untuk mendukung aktivitas akademik Anda." 
+      />
       <div className="inset-0 bg-white -z-10">
         <div className="relative w-full h-1/4 mx-auto">
           <head>

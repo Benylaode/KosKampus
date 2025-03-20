@@ -1,9 +1,18 @@
 import React from 'react';
 import Header from "../items/Header";
 import Footer from "../items/Footer";
+import SEO from "../SEO";
 
 const TentangKami = () => {
     return (
+        <>
+        <SEO 
+        title="Tentang Kami | KosKampus" 
+        description="Kami berkomitmen untuk menyediakan platform pencarian kos yang mudah diakses, transparan, dan terpercaya.
+        Dengan fitur pencarian berbasis peta, universitas, kisaran harga, tipe kamar, fasilitas, serta rating pengguna,
+        KosKampus bertujuan untuk menghilangkan hambatan informasi yang selama ini menjadi kendala utama bagi
+        mahasiswa dalam menemukan tempat tinggal yang sesuai dengan kebutuhan mereka " 
+      />
         <div className="font-sans min-h-screen bg-gray-100">
             <Header />
             <div className="p-5 max-w-6xl mx-auto bg-white shadow-lg rounded-lg">
@@ -71,6 +80,7 @@ const TentangKami = () => {
             </div>
             <Footer />
         </div>
+        </>
     );
 };
 

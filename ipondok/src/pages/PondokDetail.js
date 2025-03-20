@@ -11,6 +11,7 @@ import internetLogo from "../assets/internet.jpg";
 import "swiper/css";
 import "swiper/css/navigation"; 
 import "swiper/css/pagination"; 
+import SEO from "../SEO";
 
 Modal.setAppElement("#root");
 
@@ -70,7 +71,12 @@ const PondokDetail = () => {
   const gambarYangDigunakan = pondok?.gambar?.length > 0 ? pondok.gambar : gambarCadangan;
 
   return (
-    <div className="font-sans lg:pl-10 pl-5 lg:pr-24 pr-5">
+    <>
+        <SEO 
+          title="Pondok Detail | Nama Aplikasi" 
+          description="Selamat datang di detail pondoks" 
+        />   
+         <div className="font-sans lg:pl-10 pl-5 lg:pr-24 pr-5">
     <div className="flex flex-row gap-5 fixed pt-5 pb-5 w-full bg-white z-20 pr-8 lg:pr-32">
          <div className="flex w-full lg:w-2/3 gap-5">
              <button 
@@ -204,7 +210,8 @@ const PondokDetail = () => {
                 break;
             }
 
-            return (
+        return (
+
               <div
                 key={item.id}
                 className="flex items-center p-4 border border-gray-300 rounded-lg shadow-sm"
@@ -259,6 +266,8 @@ const PondokDetail = () => {
         </div>
       </Modal>
     </div>
+    </>
+
   );
 };
 
