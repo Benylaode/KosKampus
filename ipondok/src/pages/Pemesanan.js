@@ -44,7 +44,7 @@ const InvoiceForm = () => {
       const harga = invoiceData.isBulanan ? pondok.harga_bulan : pondok.harga_tahun;
 
       const totalBiaya = parseFloat(harga);
-      const biayaAdmin = 50000; 
+      const biayaAdmin = parseFloat(50000); 
 
       setInvoiceData((prevData) => ({
         ...prevData,
