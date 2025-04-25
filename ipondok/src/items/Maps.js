@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import icon from "../assets/pointer.png";
@@ -24,23 +24,39 @@ const fakultasData = [
   { nama: "Fakultas Vokasi", lat: -5.1356706423571845, lng: 119.48814959140431, color: "#118ab2", singkatan: "FV" }
 ];
 
+// Komponen untuk handle klik di area kosong
+function MapClickHandler({ onClick }) {
+  useMapEvents({
+    click: (e) => {
+      if (!e.originalEvent.target.closest(".leaflet-marker-icon")) {
+        onClick();
+      }
+    }
+  });
+  return null;
+}
+
 export default function Maps({ pondoks, navigate, error }) {
   const [mapCenter, setMapCenter] = useState({ lat: -5.147665, lng: 119.432732 });
   const [selectedFakultasIndex, setSelectedFakultasIndex] = useState(null);
+  const [circleVisible, setCircleVisible] = useState(false);
 
   useEffect(() => {
     if (Object.keys(pondoks).length > 0) {
       const firstPondok = Object.values(pondoks)[0];
       const latitude = parseFloat(firstPondok.latitude);
       const longitude = parseFloat(firstPondok.longitude);
-
-      if (!latitude || !longitude) {
-        setMapCenter({ lat: -5.147665, lng: 119.432732 });
-      } else {
-        setMapCenter({ lat: latitude, lng: longitude });
-      }
+      setMapCenter({ lat: latitude || -5.147665, lng: longitude || 119.432732 });
     }
   }, [pondoks]);
+
+  useEffect(() => {
+    if (selectedFakultasIndex !== null) {
+      setCircleVisible(true);
+    } else {
+      setTimeout(() => setCircleVisible(false), 300);
+    }
+  }, [selectedFakultasIndex]);
 
   const customMarkerIcon = new L.Icon({
     iconUrl: icon,
@@ -63,14 +79,14 @@ export default function Maps({ pondoks, navigate, error }) {
           center={[mapCenter.lat, mapCenter.lng]}
           zoom={14}
           style={{ height: "100%", width: "100%" }}
-          eventHandlers={{
-            click: () => setSelectedFakultasIndex(null)
-          }}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
           />
+
+          {/* Klik kosong = radius hilang */}
+          <MapClickHandler onClick={() => setSelectedFakultasIndex(null)} />
 
           {pondoks.map((pondok) =>
             parseFloat(pondok.latitude) && parseFloat(pondok.longitude) ? (
@@ -124,7 +140,7 @@ export default function Maps({ pondoks, navigate, error }) {
                 }}
               />
 
-              {selectedFakultasIndex === index && (
+              {selectedFakultasIndex === index && circleVisible && (
                 <>
                   <Circle
                     center={[fakultas.lat, fakultas.lng]}
@@ -132,15 +148,11 @@ export default function Maps({ pondoks, navigate, error }) {
                     pathOptions={{
                       color: fakultas.color,
                       fillColor: fakultas.color,
-                      fillOpacity: 0.2,
+                      fillOpacity: 0.25,
                     }}
+                    interactive={false}
                   />
-                  <Popup 
-                    position={[fakultas.lat, fakultas.lng]}
-                    eventHandlers={{
-                      click: (e) => e.originalEvent.stopPropagation()
-                    }}
-                  >
+                  <Popup position={[fakultas.lat, fakultas.lng]}>
                     <strong>{fakultas.nama}</strong>
                     <br />
                     Radius: 700 meter
@@ -151,21 +163,23 @@ export default function Maps({ pondoks, navigate, error }) {
           ))}
         </MapContainer>
 
-        {/* Transparent Overlay with No Interference */}
-        <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white rounded-lg px-4 py-2 text-sm shadow-md pointer-events-none z-[999]">
+        {/* Tombol Tutup Peta */}
+        <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white rounded-lg px-4 py-2 text-sm shadow-md pointer-events-none z-[999]">
           Tutup Peta
         </div>
-        {/* Legend */}
+
+        {/* Legenda Fakultas */}
         <div className="absolute bottom-4 left-4 bg-white rounded-lg p-4 shadow-md max-h-[50vh] overflow-y-auto text-sm z-[1000]">
           <b className="block mb-2">Legenda Fakultas</b>
           <ul className="space-y-1">
             {fakultasData.map((fakultas, idx) => (
               <li key={idx} className="flex items-center gap-2">
                 <span
+                  title={fakultas.nama}
                   style={{ backgroundColor: fakultas.color }}
                   className="inline-block w-4 h-4 rounded-full border"
                 ></span>
-                <span>{fakultas.singkatan}</span>
+                <span title={fakultas.nama}>{fakultas.singkatan}</span>
               </li>
             ))}
           </ul>
