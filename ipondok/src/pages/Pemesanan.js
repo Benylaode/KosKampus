@@ -201,7 +201,6 @@ const InvoiceForm = () => {
               <option value="tahunan">Tahunan</option>
             </select>
           </div>
-
           <div className="mb-4">
             <label className="block font-semibold text-gray-700">Notes</label>
             <textarea
