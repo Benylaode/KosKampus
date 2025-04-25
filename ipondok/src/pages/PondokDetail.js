@@ -134,7 +134,7 @@ const PondokDetail = () => {
                   )
                 }
               >
-                <span className="font-bold">Minta Review</span>
+                <span className="font-bold">Hubungi Admin</span>
               </button>
             </div>
 
@@ -265,7 +265,7 @@ const PondokDetail = () => {
                   )
                 }
               >
-                <span className="font-bold">Minta Review</span>
+                <span className="font-bold">Hubungi Admin</span>
               </button>
             </div>
 
