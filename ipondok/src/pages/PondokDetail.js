@@ -118,11 +118,27 @@ const PondokDetail = () => {
              </button>
          ))}
 
-         {/* Tombol Pesan Sekarang */}
-         <button className="bg-red-500 text-white rounded-lg px-8 py-4 text-center cursor-pointer hover:bg-red-300"
-                 onClick={() => navigate(`/pondok/${pondok.id}/pesan`, { state: { pondok } })}>
-             <span className="font-bold ">Pesan Sekarang</span>
-         </button>
+          <div className="flex flex-row gap-2 justify-between">
+              <button
+                className="bg-red-500 text-white w-[48%] rounded-lg px-4 py-4 text-center drop-shadow-md cursor-pointer hover:bg-red-700 transition-colors"
+                onClick={() => navigate(`/pondok/${pondok.id}/pesan`, { state: { pondok } })}
+              >
+                <span className="font-bold">Pesan Sekarang</span>
+              </button>
+              <button
+                className="bg-red-500 text-white w-[48%] rounded-lg px-4 py-4 text-center drop-shadow-md cursor-pointer hover:bg-red-700 transition-colors"
+                onClick={() =>
+                  window.open(
+                    `https://wa.me/6281234567890?text=Saya%20ingin%20melakukan%20pemesanan%20review%20pondok`,
+                    "_blank"
+                  )
+                }
+              >
+                <span className="font-bold">Minta Review</span>
+              </button>
+            </div>
+
+
      </div>
 
       {/* Main Content */}
@@ -233,14 +249,26 @@ const PondokDetail = () => {
             <h2 className="text-xl font-semibold mt-5">Aturan:</h2>
             <p>{pondok?.aturan || "Aturan tidak tersedia"}</p>
           </div>
-          <div className="lg:hidden mb-10 mt-4">
-            <button
-              className="bg-red-500 text-white w-full rounded-lg px-8 py-4 text-center cursor-pointer hover:bg-red-300"
-              onClick={() => navigate(`/pondok/${pondok.id}/pesan`, { state: { pondok } })}
-            >
-              <span className="font-bold ">Pesan Sekarang</span>
-            </button>
-          </div>
+          <div className="lg:hidden mb-10 mt-4 flex flex-row gap-2 justify-between">
+              <button
+                className="bg-red-500 text-white w-[48%] rounded-lg px-4 py-4 text-center cursor-pointer hover:bg-red-300"
+                onClick={() => navigate(`/pondok/${pondok.id}/pesan`, { state: { pondok } })}
+              >
+                <span className="font-bold">Pesan Sekarang</span>
+              </button>
+              <button
+                className="bg-red-500 text-white w-[48%] rounded-lg px-4 py-4 text-center cursor-pointer hover:bg-red-300"
+                onClick={() =>
+                  window.open(
+                    `https://wa.me/6281234567890?text=Saya%20ingin%20melakukan%20pemesanan%20review%20pondok`,
+                    "_blank"
+                  )
+                }
+              >
+                <span className="font-bold">Minta Review</span>
+              </button>
+            </div>
+
         </div>
       </div>
 

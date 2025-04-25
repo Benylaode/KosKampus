@@ -18,6 +18,7 @@ const EditPondokModal = ({ pondok, onClose }) => {
         gambar: pondok?.gambar || [], // Array gambar dari API
         alamat: pondok?.alamat || '',
         link_alamat: pondok?.link_alamat || '',
+        link_grub: pondok?.link_grub || '',
         latitude: pondok?.latitude || '',
         longitude: pondok?.longitude || '',
         aturan: pondok?.aturan || '',
@@ -237,6 +238,17 @@ const EditPondokModal = ({ pondok, onClose }) => {
                             type="text"
                             name="link_alamat"
                             value={formData.link_alamat}
+                            onChange={handleChange}
+                            className="border p-2 w-full rounded focus:ring-2 focus:ring-red-400"
+                        />
+                    </label>
+
+                    <label className="block">
+                        Link Grub (WhatsApp):
+                        <input
+                            type="text"
+                            name="link_grub"
+                            value={formData.link_grub}
                             onChange={handleChange}
                             className="border p-2 w-full rounded focus:ring-2 focus:ring-red-400"
                         />
