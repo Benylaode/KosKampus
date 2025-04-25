@@ -129,7 +129,7 @@ const PondokDetail = () => {
                 className="bg-red-500 text-white w-[48%] rounded-lg px-4 py-4 text-center drop-shadow-md cursor-pointer hover:bg-red-700 transition-colors"
                 onClick={() =>
                   window.open(
-                    `https://wa.me/6281234567890?text=Saya%20ingin%20melakukan%20pemesanan%20review%20pondok`,
+                    `https://wa.me/6288246212357?text=Saya%20ingin%20melakukan%20pemesanan%20review%20pondok`,
                     "_blank"
                   )
                 }
@@ -260,7 +260,7 @@ const PondokDetail = () => {
                 className="bg-red-500 text-white w-[48%] rounded-lg px-4 py-4 text-center cursor-pointer hover:bg-red-300"
                 onClick={() =>
                   window.open(
-                    `https://wa.me/6281234567890?text=Saya%20ingin%20melakukan%20pemesanan%20review%20pondok`,
+                    `https://wa.me/6288246212357?text=Saya%20ingin%20melakukan%20pemesanan%20review%20pondok`,
                     "_blank"
                   )
                 }
